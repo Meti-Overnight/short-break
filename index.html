@@ -1,0 +1,2748 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<base target="_top">
+<title>طابور الشورت بريك</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+  :root{
+    --bg-0:#080b10; --bg-1:#0c111a;
+    --ink:#0f1621; --panel:#141c29; --panel-2:#1b2434; --panel-3:#212c40;
+    --paper:#f3f6fb; --paper-dim:#c7d0de;
+    --slate:#94a3b8; --slate-dim:#5c6b82;
+    --amber:#f2a65a; --amber-dim:#3a2c1c;
+    --mint:#2fa9d6; --mint-2:#2596be; --mint-dim:#0f2c38; --mint-text:#ffffff;
+    --violet:#8b7bff; --violet-dim:#241f42;
+    --red:#f2745a; --red-dim:#3a1c18;
+    --line:#232f42; --line-soft:#1a2434;
+    --shadow-lg:0 24px 60px rgba(0,0,0,.45);
+    --shadow-md:0 12px 30px rgba(0,0,0,.32);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    position:relative;
+    background:
+      radial-gradient(1100px 600px at 105% -12%, rgba(47,169,214,0.22), transparent 60%),
+      radial-gradient(700px 500px at -10% 8%, rgba(139,123,255,0.10), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(242,166,90,0.05), transparent 50%),
+      linear-gradient(150deg, var(--bg-0), var(--bg-1) 45%, #0a0f16 100%);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% 300%;
+    animation: bgDrift 26s ease-in-out infinite;
+    overflow-x:hidden;
+    color:var(--paper);font-family:'IBM Plex Sans Arabic',sans-serif;
+    min-height:100vh;padding:34px 18px 64px;font-size:17.5px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:660px;margin:0 auto;position:relative;z-index:1;}
+  .hidden{display:none !important;}
+  input[type=month],input[type=time],input[type=date]{color-scheme:dark;}
+
+  .corner-flare{position:fixed;top:-30%;right:-22%;width:70vw;height:70vw;max-width:820px;max-height:820px;
+    background:conic-gradient(from 205deg at 50% 50%, rgba(47,169,214,.35), rgba(139,123,255,.20) 30%, transparent 62%);
+    filter:blur(10px);z-index:0;pointer-events:none;opacity:.8;-webkit-mask-image:radial-gradient(circle at 60% 40%, #000 0%, transparent 72%);
+    mask-image:radial-gradient(circle at 60% 40%, #000 0%, transparent 72%);}
+
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes pulseGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(242,116,90,0.45);}
+    50%{box-shadow:0 0 0 12px rgba(242,116,90,0);}
+  }
+  @keyframes pulseGlowMint{
+    0%,100%{box-shadow:0 0 0 0 rgba(37,150,190,0.35);}
+    50%{box-shadow:0 0 0 10px rgba(37,150,190,0);}
+  }
+  @keyframes pulseGlowPending{
+    0%,100%{box-shadow:0 0 0 0 rgba(155,120,255,0.35);}
+    50%{box-shadow:0 0 0 10px rgba(155,120,255,0);}
+  }
+
+  .bg-blobs{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
+  .bg-blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.35;will-change:transform;}
+  .bg-blob.b1{width:340px;height:340px;background:radial-gradient(circle, rgba(37,150,190,0.55), transparent 70%);top:-80px;right:-60px;animation:blobFloat1 16s ease-in-out infinite;}
+  .bg-blob.b2{width:280px;height:280px;background:radial-gradient(circle, rgba(242,166,90,0.45), transparent 70%);bottom:-60px;left:-40px;animation:blobFloat2 20s ease-in-out infinite;}
+  .bg-blob.b3{width:220px;height:220px;background:radial-gradient(circle, rgba(155,120,255,0.35), transparent 70%);top:40%;left:60%;animation:blobFloat3 18s ease-in-out infinite;}
+  .bg-blob.b4{width:180px;height:180px;background:radial-gradient(circle, rgba(242,116,90,0.3), transparent 70%);bottom:20%;right:10%;animation:blobFloat1 24s ease-in-out infinite reverse;}
+  .bg-sparkle{position:absolute;border-radius:50%;background:rgba(238,233,223,0.55);pointer-events:none;animation:sparkleTwinkle 4.5s ease-in-out infinite;}
+
+  @keyframes bgDrift{
+    0%{background-position:0% 0%, 0% 0%, 0% 50%;}
+    50%{background-position:0% 0%, 0% 0%, 100% 50%;}
+    100%{background-position:0% 0%, 0% 0%, 0% 50%;}
+  }
+  @keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,40px) scale(1.12);}66%{transform:translate(-20px,20px) scale(.94);}}
+  @keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-35px,-25px) scale(1.15);}}
+  @keyframes blobFloat3{0%,100%{transform:translate(0,0) rotate(0deg) scale(1);}50%{transform:translate(25px,-30px) rotate(20deg) scale(1.08);}}
+  @keyframes sparkleTwinkle{0%,100%{opacity:0;transform:scale(.4);}50%{opacity:.9;transform:scale(1);}}
+  @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
+  @keyframes floatY{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+  @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-3px) rotate(-1deg);}}
+  @keyframes wobbleIn{0%{opacity:0;transform:scale(.9) translateY(8px);}60%{opacity:1;transform:scale(1.02) translateY(-2px);}100%{opacity:1;transform:scale(1) translateY(0);}}
+  @keyframes dotBlink{0%,100%{opacity:.35;}50%{opacity:1;}}
+
+  .brand-logo{height:52px;width:auto;display:block;margin:0 0 24px;border-radius:10px;animation:fadeIn .4s ease both, logoFloat 5s ease-in-out infinite 1s;}
+  .brand-bar{margin-bottom:18px;animation:fadeIn .3s ease both;}
+  .brand-logo-sm{height:30px;width:auto;display:block;border-radius:6px;animation:logoFloat 6s ease-in-out infinite;}
+
+  .login-wrap{max-width:430px;margin:7vh auto 0;background:linear-gradient(180deg, var(--panel-2), var(--panel));border:1px solid var(--line);border-radius:24px;padding:38px 32px;box-shadow:var(--shadow-lg);animation:wobbleIn .5s cubic-bezier(.2,.9,.3,1.3) both, floatY 7s ease-in-out infinite 1s;position:relative;z-index:1;}
+  .login-wrap h1{font-family:'Tajawal',sans-serif;font-weight:900;font-size:31px;margin:0 0 6px;letter-spacing:-.2px;}
+  .login-wrap .eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--slate);letter-spacing:1.5px;margin-bottom:26px;}
+
+  .login-tabs{display:flex;gap:6px;background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:24px;}
+  .login-tab{flex:1;text-align:center;padding:12px 0;border-radius:10px;font-family:'Tajawal',sans-serif;font-weight:700;font-size:15px;color:var(--slate);cursor:pointer;transition:all .25s ease;}
+  .login-tab.active{background:linear-gradient(135deg,var(--panel-3),var(--panel-2));color:var(--paper);box-shadow:0 4px 14px rgba(0,0,0,.35);}
+  .login-tab:hover{color:var(--paper);transform:translateY(-1px);}
+  #adminTabs .login-tab{padding:12px 4px;font-size:14px;}
+
+  .field{margin-bottom:16px;position:relative;}
+  .field label{display:block;font-size:13.5px;color:var(--slate);margin-bottom:7px;font-weight:600;}
+  .field input{width:100%;background:var(--ink);border:1.5px solid var(--line);border-radius:11px;padding:14px 15px;color:var(--paper);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:17px;outline:none;transition:border-color .2s ease, box-shadow .2s ease, transform .15s ease;}
+  .field input:focus{border-color:var(--mint);box-shadow:0 0 0 4px rgba(47,169,214,0.16);transform:translateY(-1px);}
+  #pinInput{font-family:'JetBrains Mono',monospace;letter-spacing:3px;font-size:19px;text-align:center;}
+  #pcInput{font-family:'JetBrains Mono',monospace;letter-spacing:2px;font-size:19px;text-align:center;}
+
+  .combo{position:relative;}
+  .combo-options{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--panel-3);border:1px solid var(--line);border-radius:13px;max-height:230px;overflow-y:auto;z-index:30;box-shadow:var(--shadow-md);animation:fadeIn .15s ease both;}
+  .combo-option{padding:13px 15px;font-size:16px;cursor:pointer;transition:background .12s ease, padding .12s ease;}
+  .combo-option:hover, .combo-option.active{background:var(--panel);color:var(--mint);}
+  .combo-option:hover{padding-right:19px;}
+  .combo-empty{padding:13px 15px;font-size:14px;color:var(--slate);}
+
+  .login-hint{font-size:13px;color:var(--slate-dim);margin:-6px 0 18px;line-height:1.7;}
+  .login-error{color:var(--red);font-size:14.5px;margin-bottom:12px;min-height:18px;font-weight:600;}
+  .btn-primary{width:100%;background:linear-gradient(135deg,var(--mint),var(--mint-2));color:var(--mint-text);border:none;border-radius:13px;padding:15px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:17px;cursor:pointer;transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;background-image:linear-gradient(135deg,var(--mint),var(--mint-2)),linear-gradient(100deg, transparent 40%, rgba(255,255,255,.25) 50%, transparent 60%);background-blend-mode:normal;background-size:100% 100%,250% 100%;box-shadow:0 10px 26px rgba(47,169,214,.22);}
+  .btn-primary:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 12px 30px rgba(47,169,214,.32);animation:shimmer 1.6s linear infinite;}
+  .btn-primary:active:not(:disabled){transform:translateY(0);}
+  .btn-primary:disabled{opacity:0.5;cursor:not-allowed;box-shadow:none;}
+
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;gap:12px;animation:fadeInUp .35s ease both;}
+  header .who{font-family:'Tajawal',sans-serif;font-weight:900;font-size:29px;letter-spacing:-.2px;}
+  header .usage{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--slate);margin-top:5px;}
+  .logout-btn{background:var(--panel-2);border:1px solid var(--line);color:var(--slate);border-radius:10px;padding:11px 18px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;transition:all .2s ease;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);transform:translateY(-1px) rotate(-1deg);}
+
+  .section-label{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;color:var(--slate);letter-spacing:2.5px;margin:34px 4px 12px;text-transform:uppercase;}
+  .section-label:first-of-type{margin-top:0;}
+
+  .card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:26px;transition:background .3s ease, border-color .3s ease, transform .25s ease, box-shadow .25s ease;animation:fadeInUp .3s ease both;box-shadow:var(--shadow-md);}
+  .card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(0,0,0,.32);}
+  .card.amber{background:linear-gradient(160deg,var(--amber-dim),var(--panel));border-color:#5a4326;}
+  .card.mint{background:linear-gradient(160deg,var(--mint-dim),var(--panel));border-color:#1e5a72;animation:fadeInUp .3s ease both, pulseGlowMint 2.4s ease-in-out infinite;}
+  .card.pending{background:linear-gradient(160deg,var(--violet-dim),var(--panel));border-color:#4a3f73;animation:fadeInUp .3s ease both, pulseGlowPending 2.4s ease-in-out infinite;}
+
+  .big-timer{font-family:'JetBrains Mono',monospace;font-size:64px;font-weight:700;text-align:center;margin:18px 0;letter-spacing:.5px;transition:color .25s ease;}
+  .big-timer.ok{color:var(--mint);animation:floatY 3.4s ease-in-out infinite;} .big-timer.warn{color:var(--amber);animation:floatY 1.6s ease-in-out infinite;}
+  .big-timer.over{color:var(--red);animation:pulseGlow 1.3s ease-in-out infinite;border-radius:16px;}
+  .timer-label{text-align:center;font-size:15px;color:var(--slate);font-weight:500;}
+
+  .btn{border:none;border-radius:12px;padding:14px 20px;font-family:'Tajawal',sans-serif;font-weight:700;font-size:16px;cursor:pointer;width:100%;margin-top:16px;transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;}
+  .btn:hover:not(:disabled){transform:translateY(-2px) scale(1.01);filter:brightness(1.08);box-shadow:0 10px 22px rgba(0,0,0,.32);}
+  .btn:active:not(:disabled){transform:translateY(0) scale(.99);}
+  .btn-end{background:var(--red);color:#2b0f0a;}
+  .btn-start{background:linear-gradient(135deg,var(--mint),var(--mint-2));color:var(--mint-text);background-image:linear-gradient(135deg,var(--mint),var(--mint-2)),linear-gradient(100deg, transparent 40%, rgba(255,255,255,.28) 50%, transparent 60%);background-size:100% 100%,250% 100%;box-shadow:0 10px 24px rgba(47,169,214,.22);}
+  .btn-start:hover:not(:disabled){animation:shimmer 1.4s linear infinite;}
+  .btn-start:disabled{background:var(--panel-2);color:var(--slate);cursor:not-allowed;transform:none;box-shadow:none;filter:none;}
+  .btn-leave{background:transparent;color:var(--slate);border:1.5px solid var(--line);margin-top:10px;}
+  .btn-leave:hover{color:var(--red);border-color:var(--red);}
+
+  .muted-note{color:var(--slate);font-size:15px;text-align:center;}
+  .warn-note{color:var(--amber);font-size:14.5px;text-align:center;font-weight:600;line-height:1.8;}
+  .big-name{font-family:'Tajawal',sans-serif;font-weight:900;font-size:23px;text-align:center;animation:floatY 3s ease-in-out infinite;}
+
+  .queue-list, .log-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .queue-row{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;animation:fadeInUp .3s ease both;transition:border-color .25s ease, background .25s ease, transform .2s ease;}
+  .queue-row:hover{border-color:#3b4a63;transform:translateX(-3px);background:var(--panel-2);}
+  .queue-row .name{flex:1;font-size:16px;font-weight:600;}
+  .queue-row .name.mine{color:var(--mint);font-weight:800;}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--slate);font-weight:600;}
+  .tag.onbreak{color:var(--amber);animation:dotBlink 1.8s ease-in-out infinite;}
+  .tag.pending{color:var(--violet);}
+
+  .log-row, .admin-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid var(--line);border-radius:13px;font-size:15px;background:var(--panel);animation:fadeInUp .3s ease both;transition:border-color .25s ease, transform .2s ease;}
+  .log-row:hover, .admin-row:hover{border-color:#3b4a63;transform:translateX(-3px);}
+  .log-row .lname, .admin-row .lname{flex:1;font-weight:600;}
+  .log-row .ltime, .admin-row .ltime{color:var(--slate);font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .status-pill{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap;}
+  .status-ok{background:var(--mint-dim);color:var(--mint);}
+  .status-late{background:var(--red-dim);color:var(--red);}
+  .status-pending{background:var(--violet-dim);color:var(--violet);}
+
+  .empty-note{color:var(--slate);font-size:15px;text-align:center;padding:22px;animation:fadeIn .3s ease both;}
+  footer{margin-top:36px;text-align:center;font-size:12.5px;color:var(--slate-dim);font-family:'JetBrains Mono',monospace;}
+
+  /* ---- admin dashboard ---- */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;animation:fadeInUp .3s ease both;}
+  .stat-card{background:linear-gradient(160deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:19px 10px;text-align:center;transition:border-color .25s ease, transform .2s ease, box-shadow .2s ease;box-shadow:var(--shadow-md);}
+  .stat-card:hover{border-color:#3b4a63;transform:translateY(-4px) scale(1.02);box-shadow:0 14px 28px rgba(0,0,0,.32);}
+  .stat-card.amber{border-color:#5a4326;background:linear-gradient(160deg,var(--amber-dim),var(--panel));}
+  .stat-card.red{border-color:#5a2c26;background:linear-gradient(160deg,var(--red-dim),var(--panel));}
+  .stat-value{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:31px;color:var(--paper);transition:transform .2s ease;}
+  .stat-card:hover .stat-value{transform:scale(1.08);}
+  .stat-label{font-size:12px;color:var(--slate);margin-top:7px;line-height:1.35;font-weight:600;}
+  @media (max-width:420px){ .stat-grid{grid-template-columns:repeat(2,1fr);} }
+
+  .admin-search{margin:26px 0 0;}
+  .admin-search input{width:100%;background:var(--panel);border:1.5px solid var(--line);border-radius:13px;padding:14px 16px;color:var(--paper);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:16px;outline:none;transition:border-color .2s ease, box-shadow .2s ease, transform .15s ease;}
+  .admin-search input:focus{border-color:var(--mint);box-shadow:0 0 0 4px rgba(47,169,214,0.14);transform:translateY(-1px);}
+
+  .admin-table{background:var(--panel);border:1px solid var(--line);border-radius:17px;overflow:hidden;animation:fadeInUp .3s ease both;box-shadow:var(--shadow-md);}
+  .admin-table-head{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--panel-3);font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;color:var(--slate);letter-spacing:1.5px;}
+  .admin-table-head .h-name{flex:1;}
+  .admin-table-head .h-col{min-width:96px;text-align:left;}
+  .admin-table-row{display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid var(--line-soft);transition:background .2s ease, opacity .2s ease, max-height .2s ease;}
+  .admin-table-row:hover{background:var(--panel-2);}
+  .admin-table-row.filtered-out{display:none;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-family:'Tajawal',sans-serif;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;transition:transform .2s ease;}
+  .admin-table-row:hover .avatar{transform:scale(1.1) rotate(-4deg);}
+  .admin-name-cell{flex:1;display:flex;align-items:center;gap:12px;font-size:15.5px;font-weight:600;min-width:0;}
+  .admin-name-cell span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .admin-col{min-width:96px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--slate);text-align:left;}
+  .admin-empty{padding:26px;text-align:center;color:var(--slate);font-size:15px;}
+  .updated-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mint);margin-left:7px;animation:pulseGlowMint 2s ease-in-out infinite;}
+
+  .approval-card{background:linear-gradient(135deg,var(--violet-dim),var(--panel));border:1px solid #4a3f73;border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:12px;margin-bottom:12px;animation:fadeInUp .3s ease both, pulseGlowPending 2.4s ease-in-out infinite;box-shadow:var(--shadow-md);}
+  .approval-name{flex:1;font-size:15.5px;font-weight:700;}
+  .approval-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--slate);}
+  .approve-btn,.reject-btn{border:none;border-radius:9px;padding:10px 16px;font-family:'Tajawal',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:transform .15s ease, filter .15s ease;}
+  .approve-btn{background:linear-gradient(135deg,var(--mint),var(--mint-2));color:#fff;}
+  .reject-btn{background:var(--red);color:#2b0f0a;}
+  .approve-btn:hover,.reject-btn:hover{transform:translateY(-1px) scale(1.03);filter:brightness(1.08);}
+
+  /* ---- additions ---- */
+  .logout-fixed{position:fixed;bottom:18px;left:18px;z-index:50;box-shadow:var(--shadow-md);}
+  .area-title{font-family:'Tajawal',sans-serif;font-weight:800;font-size:16px;color:var(--mint);padding:12px 18px;background:var(--panel-3);border-top:1px solid var(--line-soft);}
+  .row-actions{display:flex;gap:6px;flex-shrink:0;}
+  .mini-btn{background:var(--panel-3);border:1px solid var(--line);color:var(--paper);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s ease;}
+  .mini-btn:hover{border-color:var(--mint);transform:translateY(-1px);}
+  .mini-btn.red{color:var(--red);} .mini-btn.red:hover{border-color:var(--red);}
+  .pos{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mint);min-width:28px;}
+  .break-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+  .break-grid .card{padding:18px;} .break-grid .big-timer{font-size:42px;margin:10px 0;} .break-grid .big-name{font-size:22px;}
+  @media (max-width:520px){ .break-grid{grid-template-columns:1fr;} }
+  .admin-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .admin-form input,.admin-form select{flex:1;min-width:140px;background:var(--panel);border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--paper);font-family:inherit;font-size:15px;outline:none;}
+  .admin-form input:focus,.admin-form select:focus{border-color:var(--mint);}
+  .admin-form .btn{width:auto;margin-top:0;padding:12px 20px;}
+  .admin-form .combo{flex:1;min-width:140px;}
+  .admin-form .combo input{width:100%;}
+  .replace-note{width:100%;font-size:13.5px;color:var(--amber);font-weight:600;}
+  .day-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+  .day-box summary{cursor:pointer;padding:14px 18px;display:flex;align-items:center;gap:10px;font-weight:700;list-style:none;}
+  .day-box summary::-webkit-details-marker{display:none;}
+  .day-box summary .d-sum{flex:1;} .day-box summary .d-date{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--slate);}
+  .day-box[open] summary{background:var(--panel-2);}
+  .month-sum{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+
+  /* ---- settings ---- */
+  .set-card{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:18px 22px;}
+  .set-card .timer-label{flex:1;text-align:right;font-weight:700;}
+  .set-card .btn{width:auto;margin-top:0;padding:12px 20px;}
+  .cap-row{display:flex;align-items:center;gap:12px;padding:6px 0;}
+  .cap-name{flex:1;font-family:'Tajawal',sans-serif;font-weight:800;font-size:17px;}
+  .cap-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;min-width:40px;text-align:center;color:var(--mint);}
+  .cap-row .mini-btn{padding:8px 16px;font-size:18px;}
+
+  /* ---- popup ---- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(5,8,13,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;animation:fadeIn .2s ease both;}
+  .modal-box{width:100%;max-width:380px;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid #5a2c26;border-radius:22px;padding:32px 26px 26px;text-align:center;box-shadow:var(--shadow-lg);animation:wobbleIn .35s cubic-bezier(.2,.9,.3,1.3) both;}
+  .modal-icon{width:62px;height:62px;margin:0 auto 18px;border-radius:50%;background:var(--red-dim);border:1.5px solid var(--red);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;font-family:'Tajawal',sans-serif;animation:pulseGlow 2s ease-in-out infinite;}
+  .modal-title{font-family:'Tajawal',sans-serif;font-weight:900;font-size:21px;margin:0 0 10px;}
+  .modal-text{color:var(--paper-dim);font-size:16px;line-height:1.8;margin:0;}
+  .modal-box .btn{margin-top:22px;}
+
+  /* ---- أسماء الأدمن: القص من الآخر ---- */
+  .admin-name-cell span:not(.avatar){
+    direction:ltr;
+    text-align:right;
+    unicode-bidi:plaintext;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  /* توسيع صفحة الأدمن عشان الأسماء تاخد مساحة أكبر */
+  #adminDashboard.wrap{ max-width:820px; }
+
+  /* ---- toast (تحت يمين) ---- */
+  .toast-box{position:fixed;bottom:18px;right:18px;z-index:900;display:flex;flex-direction:column;gap:10px;width:340px;max-width:calc(100vw - 36px);pointer-events:none;}
+  .toast{pointer-events:auto;position:relative;background:linear-gradient(180deg,var(--panel-3),var(--panel-2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow-lg);animation:toastIn .35s cubic-bezier(.2,.9,.3,1.2) both;}
+  .toast.mint{border-color:#1e5a72;animation:toastIn .35s cubic-bezier(.2,.9,.3,1.2) both, pulseGlowMint 2.4s ease-in-out infinite;}
+  .toast.ok{border-color:#1e5a72;} .toast.warn{border-color:#5a4326;} .toast.bad{border-color:#5a2c26;}
+  .toast-title{font-family:'Tajawal',sans-serif;font-weight:900;font-size:17px;margin:0 0 4px;padding-left:24px;}
+  .toast.mint .toast-title, .toast.ok .toast-title{color:var(--mint);}
+  .toast.warn .toast-title{color:var(--amber);} .toast.bad .toast-title{color:var(--red);}
+  .toast-text{font-size:14.5px;color:var(--paper-dim);line-height:1.7;}
+  .toast-text b{font-family:'JetBrains Mono',monospace;color:var(--paper);}
+  .toast-x{position:absolute;top:8px;left:10px;background:none;border:none;color:var(--slate);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px;}
+  .toast-x:hover{color:var(--red);}
+  .toast-btn{margin-top:12px;width:100%;border:none;border-radius:10px;padding:10px 14px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:15px;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--mint),var(--mint-2));}
+  @keyframes toastIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+  @media (max-width:520px){ .toast-box{bottom:72px;} }
+
+  /* ---- تبديل الأدوار ---- */
+  .pick-list{display:flex;flex-direction:column;gap:8px;margin-top:16px;max-height:280px;overflow-y:auto;}
+  .pick-item{display:flex;align-items:center;gap:12px;width:100%;text-align:right;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--paper);font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer;transition:border-color .15s ease, transform .15s ease, background .15s ease;}
+  .pick-item:hover{border-color:var(--mint);background:var(--panel-2);transform:translateY(-1px);}
+  .pick-pos{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mint);min-width:28px;}
+  .pick-name{flex:1;unicode-bidi:plaintext;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .swap-actions{display:flex;gap:10px;}
+  .swap-actions .btn{flex:1;margin-top:22px;}
+</style>
+</head>
+<body>
+
+<div class="corner-flare" aria-hidden="true"></div>
+<div class="bg-blobs" aria-hidden="true">
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+  <div class="bg-blob b3"></div>
+  <div class="bg-blob b4"></div>
+  <div class="bg-sparkle" style="width:4px;height:4px;top:18%;left:22%;animation-delay:.2s;"></div>
+  <div class="bg-sparkle" style="width:3px;height:3px;top:66%;left:78%;animation-delay:1.4s;"></div>
+  <div class="bg-sparkle" style="width:5px;height:5px;top:38%;left:88%;animation-delay:2.1s;"></div>
+  <div class="bg-sparkle" style="width:3px;height:3px;top:80%;left:12%;animation-delay:.9s;"></div>
+  <div class="bg-sparkle" style="width:4px;height:4px;top:8%;left:60%;animation-delay:3s;"></div>
+</div>
+
+<div id="loginScreen" class="login-wrap">
+  <h1>طابور الشورت بريك</h1>
+  <div class="eyebrow">7 دقايق لكل بريك · مرتين بس في اليوم</div>
+
+  <div class="login-tabs">
+    <div class="login-tab active" id="tabUser">تسجيل الدخول</div>
+    <div class="login-tab" id="tabAdmin">Dashboard</div>
+  </div>
+
+  <div class="login-error" id="loginError"></div>
+
+  <div class="field combo" id="nameCombo">
+    <label>اسمك</label>
+    <input id="nameSearch" type="text" placeholder="جار تحميل الأسماء..." autocomplete="off" disabled />
+    <div id="nameOptions" class="combo-options hidden"></div>
+    <input type="hidden" id="loginName" value="" />
+  </div>
+
+  <div class="field" id="areaField">
+    <label>الـ Area بتاعتك</label>
+    <div class="login-tabs" style="margin-bottom:0">
+      <div class="login-tab" id="areaTab1">Area 1</div>
+      <div class="login-tab" id="areaTab2">Area 2</div>
+    </div>
+  </div>
+
+  <div class="field" id="pcField">
+    <label>رقم الجهاز</label>
+    <input id="pcInput" type="text" inputmode="numeric" maxlength="4" placeholder="مثال: 25" autocomplete="off" />
+  </div>
+
+  <div class="field"><label id="pinLabel">الرقم القومي (14 رقم)</label><input id="pinInput" type="password" inputmode="numeric" maxlength="14" placeholder="••••••••••••••" autocomplete="off" /></div>
+  <div class="login-hint" id="pinHint">اكتب الرقم القومي بتاعك زي ما هو مسجل في الشيت عشان تدخل.</div>
+  <button class="btn-primary" id="loginBtn" disabled>دخول</button>
+</div>
+
+<div id="dashboard" class="wrap hidden">
+  <header>
+    <div><div class="who" id="whoName"></div><div class="usage" id="usageLine"></div></div>
+  </header>
+
+  <div class="login-tabs" id="userTabs">
+    <div class="login-tab active" data-utab="Queue">الطابور</div>
+    <div class="login-tab" data-utab="Stats">إحصائياتي</div>
+  </div>
+
+  <div id="userTabQueue">
+    <div class="section-label">حالتك</div>
+    <div id="myCard" class="card"></div>
+    <div class="section-label" id="queueTitle">الطابور دلوقتي</div>
+    <ul id="queueList" class="queue-list"></ul>
+    <div id="emptyQueueNote" class="empty-note hidden">الطابور فاضي</div>
+    <div class="section-label">سجل اليوم</div>
+    <ul id="logList" class="log-list"></ul>
+    <div id="emptyLogNote" class="empty-note hidden">لسه محدش خلص بريك النهارده</div>
+  </div>
+
+  <div id="userTabStats" class="hidden">
+    <div class="section-label">اختار الشهر</div>
+    <div class="field admin-search" style="margin-top:0"><input type="month" id="statsMonthInput" /></div>
+    <div class="section-label" id="statsTitle">إحصائياتي</div>
+    <div class="stat-grid" id="statsGrid"></div>
+    <div class="section-label">بريكاتي في الشهر ده</div>
+    <ul id="statsList" class="log-list"></ul>
+    <div id="statsEmpty" class="empty-note hidden">مفيش بريكات في الشهر ده</div>
+  </div>
+
+  <footer>البيانات متخزنة في الشيت · بتتحدث لحظيًا (Realtime)</footer>
+  <button class="logout-btn logout-fixed" id="logoutBtn">خروج</button>
+</div>
+
+<div id="adminDashboard" class="wrap hidden">
+  <header>
+    <div><div class="who" id="adminWho"></div><div class="usage"><span class="updated-dot"></span>آخر تحديث <span id="adminUpdatedAt">--:--</span></div></div>
+  </header>
+
+  <div class="login-tabs" id="adminTabs">
+    <div class="login-tab active" data-tab="Main">الرئيسية</div>
+    <div class="login-tab" data-tab="Report">Report</div>
+    <div class="login-tab" data-tab="Violation">Violation</div>
+    <div class="login-tab" data-tab="Log">Log</div>
+    <div class="login-tab" data-tab="Settings">Settings</div>
+  </div>
+
+  <!-- ===== الرئيسية ===== -->
+  <div id="adminTabMain">
+    <div class="break-grid">
+      <div class="card amber" id="adminBreakCard1">
+        <div class="timer-label" id="adminBreakLabel1">Area 1 — مفيش حد في البريك</div>
+        <div id="adminBreakBody1"></div>
+      </div>
+      <div class="card amber" id="adminBreakCard2">
+        <div class="timer-label" id="adminBreakLabel2">Area 2 — مفيش حد في البريك</div>
+        <div id="adminBreakBody2"></div>
+      </div>
+    </div>
+
+    <div class="section-label" id="pendingSectionLabel" style="display:none;">طلبات محتاجة موافقتك</div>
+    <div id="pendingApprovals"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-value" id="statJoined">0</div><div class="stat-label">دخلوا الطابور</div></div>
+      <div class="stat-card"><div class="stat-value" id="statWaiting">0</div><div class="stat-label">مستنيين دلوقتي</div></div>
+      <div class="stat-card amber"><div class="stat-value" id="statOnBreak">0</div><div class="stat-label">في البريك</div></div>
+      <div class="stat-card red"><div class="stat-value" id="statLate">0</div><div class="stat-label">اتأخروا النهارده</div></div>
+    </div>
+
+    <div class="field admin-search">
+      <input id="adminSearch" type="text" placeholder="دوّر بالاسم في كل الجداول..." autocomplete="off" />
+    </div>
+
+    <div class="section-label">دخلوا الطابور النهارده</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">الاسم</span><span class="h-col">الاستخدام</span><span class="h-col">تحكم</span></div>
+      <div id="adminJoinedList"></div>
+    </div>
+    <div class="admin-form">
+      <div class="combo"><input id="usageName" placeholder="اكتب اسم من القايمة..." autocomplete="off" /></div>
+      <input id="usageValue" type="number" min="0" max="20" placeholder="الاستخدام" style="max-width:120px;min-width:100px" />
+      <button class="btn btn-start" id="usageSetBtn">تعديل الاستخدام</button>
+    </div>
+
+    <div class="section-label">في الطابور دلوقتي (تعديل)</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">الاسم</span><span class="h-col">الحالة</span><span class="h-col">تحكم</span></div>
+      <div id="adminQueueList"></div>
+    </div>
+    <div class="admin-form">
+      <div class="replace-note hidden" id="replaceNote"></div>
+      <div class="combo"><input id="adminAddName" placeholder="اكتب اسم من القايمة..." autocomplete="off" /></div>
+      <select id="adminAddArea"><option value="1">Area 1</option><option value="2">Area 2</option></select>
+      <button class="btn btn-start" id="adminAddBtn">إضافة للطابور</button>
+      <button class="mini-btn hidden" id="adminCancelReplace">إلغاء الاستبدال</button>
+    </div>
+
+    <div class="section-label">أخدوا بريك النهارده</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">الاسم</span><span class="h-col">Area</span><span class="h-col">الوقت</span><span class="h-col">الحالة</span></div>
+      <div id="adminBreaksList"></div>
+    </div>
+  </div>
+
+  <!-- ===== Report ===== -->
+  <div id="adminTabReport" class="hidden">
+    <div class="section-label">اختار الشهر</div>
+    <div class="field admin-search" style="margin-top:0"><input type="month" id="reportMonth" /></div>
+    <div class="section-label">تقرير الأيام</div>
+    <div id="reportBody"></div>
+  </div>
+
+  <!-- ===== Violation ===== -->
+  <div id="adminTabViolation" class="hidden">
+    <div class="section-label">إيقاف الشورت بريك لشخص</div>
+    <div class="admin-form" style="margin-top:0">
+      <div class="combo"><input id="violationName" placeholder="اكتب اسم من القايمة..." autocomplete="off" /></div>
+      <button class="btn btn-end" id="violationAddBtn" style="color:#2b0f0a">إيقاف</button>
+    </div>
+    <div class="section-label">الموقوفين دلوقتي</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">الاسم</span><span class="h-col">من إمتى</span><span class="h-col">تحكم</span></div>
+      <div id="violationList"></div>
+    </div>
+  </div>
+
+  <!-- ===== Log ===== -->
+  <div id="adminTabLog" class="hidden">
+    <div class="section-label">سجل تعديلات الأدمن</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">العملية</span><span class="h-col">الوقت</span></div>
+      <div id="adminLogList"></div>
+    </div>
+  </div>
+
+  <!-- ===== Settings ===== -->
+  <div id="adminTabSettings" class="hidden">
+    <div class="section-label">التحكم في الطابور</div>
+
+    <div class="card set-card" id="pauseCard">
+      <div class="timer-label" id="pauseStatus"></div>
+      <button class="btn btn-end" id="pauseBtn" data-act="togglePause"></button>
+    </div>
+
+    <div class="card set-card" id="autoCard">
+      <div class="timer-label" id="autoStatus"></div>
+      <button class="btn btn-end" id="autoBtn" data-act="toggleAutoCancel"></button>
+    </div>
+
+    <div class="card set-card" id="autoApproveCard">
+      <div class="timer-label" id="autoApproveStatus"></div>
+      <button class="btn btn-start" id="autoApproveBtn" data-act="toggleAutoApprove"></button>
+    </div>
+
+    <div class="card set-card" id="swapAdminCard">
+      <div class="timer-label" id="swapAdminStatus"></div>
+      <button class="btn btn-start" id="swapAdminBtn" data-act="toggleSwapAdmin"></button>
+    </div>
+
+    <div class="section-label">عدد الناس في البريك مع بعض</div>
+    <div class="card" style="padding:16px 22px">
+      <div class="cap-row">
+        <span class="cap-name">Area 1</span>
+        <button class="mini-btn" data-act="cap" data-id="1" data-dir="-1">−</button>
+        <span class="cap-val" id="capVal1">1</span>
+        <button class="mini-btn" data-act="cap" data-id="1" data-dir="1">+</button>
+      </div>
+      <div class="cap-row">
+        <span class="cap-name">Area 2</span>
+        <button class="mini-btn" data-act="cap" data-id="2" data-dir="-1">−</button>
+        <span class="cap-val" id="capVal2">1</span>
+        <button class="mini-btn" data-act="cap" data-id="2" data-dir="1">+</button>
+      </div>
+    </div>
+
+    <div class="section-label">رسالة الإيقاف</div>
+    <div class="admin-form" style="margin-top:0">
+      <input id="pauseMsgInput" maxlength="300" placeholder="مثال: اجتماع التيم، هيتفتح الساعة 3:30" autocomplete="off" />
+      <button class="btn btn-start" id="pauseMsgSave">حفظ</button>
+      <button class="mini-btn" id="pauseMsgClear">الرسالة الافتراضية</button>
+    </div>
+    <div class="login-hint" style="margin:10px 4px 0">الرسالة دي بتظهر لليوزرز لما الطابور يتوقف (يدوي أو مجدول). سيبها فاضية عشان تظهر الرسالة الافتراضية.</div>
+
+    <div class="section-label">إيقاف مجدول</div>
+    <div class="admin-form" style="margin-top:0">
+      <input type="time" id="schFrom" title="من" />
+      <input type="time" id="schTo" title="إلى" />
+      <input type="date" id="schDate" title="تاريخ محدد (اختياري)" />
+      <input id="schMsg" maxlength="200" placeholder="السبب (اختياري)" autocomplete="off" />
+      <button class="btn btn-start" id="schAddBtn">إضافة</button>
+    </div>
+    <div class="login-hint" style="margin:10px 4px 14px">لو سبت التاريخ فاضي الفترة بتتكرر كل يوم. التوقيت بتوقيت القاهرة. أثناء الإيقاف المجدول المستخدمين بيقدروا يحجزوا دور بس مش بيطلبوا البريك لحد ما الإيقاف يخلص، ومحدش بيقدر يحجز لو دوره المتوقع هيتعارض مع إيقاف مجدول. لو عايز تفتح قبل الميعاد امسح الفترة من هنا.</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">الفترة</span><span class="h-col">تحكم</span></div>
+      <div id="scheduleList"></div>
+    </div>
+
+    <div class="section-label">أدوات آخر الشيفت</div>
+    <div class="card" style="padding:18px 22px">
+      <div class="timer-label" style="text-align:right;margin-bottom:4px">تفضية الطابور بتشيل كل المستنيين وطلبات الموافقة (اللي في البريك دلوقتي بيكمل لحد ما يخلص).</div>
+      <button class="btn btn-end" data-act="clearQueue" style="margin-top:12px">تفضية الطابور</button>
+      <div class="timer-label" style="text-align:right;margin:18px 0 4px">تصفير الاستخدام بيرجّع اليوزات بتاعة الكل لصفر.</div>
+      <button class="btn btn-end" data-act="resetUsage" style="margin-top:12px">تصفير استخدام الكل</button>
+    </div>
+  </div>
+
+  <footer>Admin Dashboard · بتتحدث لحظيًا (Realtime)</footer>
+  <button class="logout-btn logout-fixed" id="adminLogoutBtn">خروج</button>
+</div>
+
+<div id="toastBox" class="toast-box" aria-live="polite"></div>
+
+<div id="swapOverlay" class="modal-overlay hidden">
+  <div class="modal-box" style="border-color:#4a3f73">
+    <div class="modal-icon" style="background:var(--violet-dim);border-color:var(--violet);color:var(--violet);animation:pulseGlowPending 2s ease-in-out infinite">⇄</div>
+    <h3 class="modal-title" id="swapTitle">طلب تبديل</h3>
+    <p class="modal-text" id="swapText"></p>
+    <div class="swap-actions">
+      <button class="btn btn-start" id="swapApprove">موافقة</button>
+      <button class="btn btn-end" id="swapReject">رفض</button>
+    </div>
+  </div>
+</div>
+
+<div id="pickOverlay" class="modal-overlay hidden">
+  <div class="modal-box" style="border-color:#4a3f73">
+    <h3 class="modal-title" id="pickTitle"></h3>
+    <p class="modal-text" id="pickText" style="font-size:14px"></p>
+    <div id="pickList" class="pick-list"></div>
+    <button class="btn btn-leave" id="pickCancel">إلغاء</button>
+  </div>
+</div>
+
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">!</div>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <p class="modal-text" id="modalText"></p>
+    <button class="btn btn-start" id="modalOk">تمام</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, onValue, runTransaction, set, remove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+const FIREBASE_DB_URL = 'https://short-break-on-default-rtdb.firebaseio.com';
+const app = initializeApp({ databaseURL: FIREBASE_DB_URL });
+const db = getDatabase(app);
+const stateRef = ref(db, 'state');
+const violationsRef = ref(db, 'violations'); // مسار منفصل عشان أي كتابة على state متمسحوش
+let violationsData = {};
+const settingsRef = ref(db, 'settings'); // مسار منفصل زي violations
+let settingsData = {};
+const PAUSE_MSG = 'الدخول في الطابور وطلب البريك موقوف مؤقتًا من الأدمن، وسيتم فتحه قريبًا';
+let lastPaused = false;
+let lastPausedEff = null;
+const SECOND_BREAK_HOUR = 4; // البريك التاني بيتفتح الساعة 4 الصبح (توقيت القاهرة)
+const SECOND_MSG = 'البريك التاني بيتفتح الساعة 4 الصبح';
+let lastLockFlag = null;
+const TURN_SECONDS = 5 * 60; // مهلة طلب البريك بعد ما الدور يجي
+const EXT_SECONDS = 2 * 60;  // مدة تمديد البريك
+let lastTurnNotifiedId = null;
+let myTurnTrack = null;
+let housekeepingBusy = false;
+let shownSwapInId = null;
+let lastAutoCancelFlag = null;
+let lastExtKey = '';
+let lastSkipKey = '';
+let lastJoinKey = null;
+let adminSeenPending = null;
+let statsMonth = null;
+const ackedSwaps = new Set();
+
+const VIOLATION_MSG = 'الـ Short Break موقوف مؤقتًا من الـ Operation، وسيتم تنبيهكم لما يتفتح';
+const SESSION_KEY = 'sb_session';
+
+let BREAK_SECONDS = 6 * 60;
+let DAILY_LIMIT = 2;
+let myKey = null;
+let myDisplayName = null;
+let myArea = 1;
+let myPc = '';
+let myMode = 'user';
+let lastState = { queue: [] };
+let lastSignature = null;
+let lastAdminSignature = null;
+let loginMode = 'user';
+let loginArea = null;
+let rosterNames = [];
+let sharedState = null;
+let adminOnBreak = { 1: [], 2: [] };
+let adminBreakTickTimer = null;
+let replaceId = null;
+let lastDay = null;
+let lastViolated = false;
+const openDays = new Set();
+
+const API_URL = 'https://script.google.com/a/macros/meti.services/s/AKfycbwwLyAoyvO58_ESaIBCKDzSn6llgxuj0yz5r7B9WK_DSr-TS0W0qo87R96_4fJib1Yz/exec'; // رابطك
+function runAsync(name, ...args){
+  return fetch(API_URL, { method: 'POST', body: JSON.stringify({ fn: name, args }) })
+    .then(r => r.json());
+}
+function normalize(n){ return String(n).trim().toLowerCase(); }
+// رقم الجهاز: أرقام بس (بيحول العربي لإنجليزي) وأقصى 4 خانات
+function cleanPc_(v){
+  return String(v == null ? '' : v)
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/\D/g, '').slice(0, 4);
+}
+function pcLbl_(pc){ return pc ? 'C-' + escapeHtml(String(pc)) : ''; }
+// تطبيع عربي للبحث: أ/إ/آ = ا ، ة = ه ، ى = ي ، وبيشيل التشكيل والتطويل
+function normAr_(s){
+  return String(s == null ? '' : s).toLowerCase()
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function canonName_(v){
+  const q = normAr_(v);
+  if(!q) return null;
+  return rosterNames.find(n => normAr_(n) === q) || null;
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function attrEsc_(s){ return escapeHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fmtTime(sec){
+  const neg = sec < 0; sec = Math.abs(Math.round(sec));
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return (neg?'+':'') + m + ':' + s;
+}
+function timerClass(remaining){ if(remaining<0) return 'over'; if(remaining<60) return 'warn'; return 'ok'; }
+// اليوم بتوقيت القاهرة، بيتغير الساعة 12 بليل
+function todayStr_(){ return new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Cairo' }); }
+function newId_(){
+  return (crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2)));
+}
+function areaOf_(p){ return Number(p && p.area) === 2 ? 2 : 1; }
+function vkey_(k){ return normalize(k).replace(/[.$#\[\]\/]/g, '_'); }
+function cairoHour_(){
+  return parseInt(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: '2-digit', hourCycle: 'h23' }).format(new Date()), 10);
+}
+function cairoMinutes_(){
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+  const h = parseInt(p.find(x => x.type === 'hour').value, 10);
+  const m = parseInt(p.find(x => x.type === 'minute').value, 10);
+  return h * 60 + m;
+}
+function secondBreakLocked_(used){ return used >= 1 && cairoHour_() < SECOND_BREAK_HOUR; }
+function hhmm_(t){ return new Date(t).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}); }
+const RANK = { onbreak: 0, pending: 1, waiting: 2 };
+
+// ---------- إعدادات: إيقاف مجدول + رسالة مخصصة + سعة البريك ----------
+function hmToMin_(t){ const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? (+m[1]) * 60 + (+m[2]) : -1; }
+function schedulesArr_(){
+  const o = settingsData.schedules || {};
+  return Object.keys(o).map(id => ({ id, ...o[id] })).sort((a,b) => hmToMin_(a.from) - hmToMin_(b.from));
+}
+function activeSchedule_(){
+  const now = cairoMinutes_(), today = todayStr_();
+  return schedulesArr_().find(s => {
+    const f = hmToMin_(s.from), t = hmToMin_(s.to);
+    if(f < 0 || t < 0 || f === t) return false;
+    if(s.date) return s.date === today && f < t && now >= f && now < t;
+    return f < t ? (now >= f && now < t) : (now >= f || now < t);
+  }) || null;
+}
+function manualPaused_(){ return !!settingsData.paused; }
+// أي إيقاف (يدوي أو مجدول): بيمنع طلب البريك. الحجز في الطابور بيتمنع بس في الإيقاف اليدوي.
+function isPaused_(){ return manualPaused_() || !!activeSchedule_(); }
+function schedPaused_(){ return !manualPaused_() && !!activeSchedule_(); }
+function pauseMsg_(){
+  const custom = String(settingsData.pauseMessage || '').trim();
+  if(settingsData.paused) return custom || PAUSE_MSG;
+  const sc = activeSchedule_();
+  return (sc && String(sc.msg || '').trim()) || custom || PAUSE_MSG;
+}
+function capOf_(area){
+  const c = Number(settingsData.capacity && settingsData.capacity['a' + area]);
+  return c >= 1 ? Math.floor(c) : 1;
+}
+function allowedSec_(e){ return BREAK_SECONDS + (Number(e && e.extra) || 0); }
+
+// ---------- خط زمني بالدقايق (0 = النهارده 12 بليل بتوقيت القاهرة) ----------
+function fmtHM_(s){
+  const m = /^(\d{1,2}):(\d{2})$/.exec(s || '');
+  if(!m) return s || '';
+  return new Date(2000, 0, 1, +m[1], +m[2]).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+}
+function hhmmFromT_(t){
+  const mm = ((Math.round(t) % 1440) + 1440) % 1440;
+  return fmtHM_(Math.floor(mm / 60) + ':' + String(mm % 60).padStart(2, '0'));
+}
+function nowT_(){ return cairoMinutes_() + new Date().getSeconds() / 60; }
+function dateUtc_(ds){ const p = String(ds).split('-').map(Number); return Date.UTC(p[0], (p[1] || 1) - 1, p[2] || 1); }
+// كل فترات الإيقاف المجدول (امبارح لبعد بكرة) كفترات [a,b) بالدقايق
+function pauseIntervals_(){
+  const base = dateUtc_(todayStr_());
+  const out = [];
+  schedulesArr_().forEach(s => {
+    const f = hmToMin_(s.from), t = hmToMin_(s.to);
+    if(f < 0 || t < 0 || f === t) return;
+    if(s.date){
+      if(f > t) return;
+      const dOff = Math.round((dateUtc_(s.date) - base) / 86400000);
+      out.push({ a: dOff * 1440 + f, b: dOff * 1440 + t, s });
+    }else{
+      for(let d = -1; d <= 2; d++){
+        const a = d * 1440 + f;
+        const b = d * 1440 + t + (t < f ? 1440 : 0);
+        out.push({ a, b, s });
+      }
+    }
+  });
+  return out;
+}
+// لو الوقت t جوه إيقاف، بيرجّع وقت نهايته (بيتتبع الإيقافات المتصلة ببعض)
+function pauseEndFrom_(t){
+  const ivs = pauseIntervals_();
+  let cur = t, moved = true, guard = 0;
+  while(moved && guard++ < 20){
+    moved = false;
+    ivs.forEach(iv => { if(iv.a <= cur && cur < iv.b){ cur = iv.b; moved = true; } });
+  }
+  return cur;
+}
+function resumeLabel_(){ return hhmmFromT_(pauseEndFrom_(nowT_())); }
+// رسالة popup وقت الإيقاف
+function pausePopupMsg_(){
+  if(manualPaused_()) return pauseMsg_();
+  const sc = activeSchedule_();
+  if(!sc) return pauseMsg_();
+  const m = String(sc.msg || '').trim() || String(settingsData.pauseMessage || '').trim();
+  return (m ? m + ' — ' : '') + 'هتقدر تطلب البريك الساعة ' + resumeLabel_();
+}
+
+// ---------- popup ----------
+function showPopup_(text, title){
+  document.getElementById('modalTitle').textContent = title || 'تنبيه';
+  document.getElementById('modalText').textContent = text;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+document.getElementById('modalOk').addEventListener('click', () => {
+  document.getElementById('modalOverlay').classList.add('hidden');
+});
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if(e.target.id === 'modalOverlay') e.target.classList.add('hidden');
+});
+
+// ---------- realtime listeners ----------
+onValue(stateRef, (snap) => {
+  sharedState = snap.val() || {};
+  if(sharedState.breakSeconds) BREAK_SECONDS = sharedState.breakSeconds;
+  if(sharedState.dailyLimit) DAILY_LIMIT = sharedState.dailyLimit;
+  refresh_();
+});
+onValue(violationsRef, (snap) => {
+  violationsData = snap.val() || {};
+  refresh_();
+});
+onValue(settingsRef, (snap) => {
+  settingsData = snap.val() || {};
+  refresh_();
+});
+function refresh_(){
+  if(!myKey || !sharedState) return;
+  if(myMode === 'admin') renderAdmin(); else render();
+}
+
+// نسخة شغالة من الحالة: لو يوم جديد (12 بليل) بيمسح الطابور واليوزيدج
+// وبيأرشف لوج اليوم القديم في history عشان الـ Report
+function shapeState_(s){
+  const today = todayStr_();
+  const fresh = !s || s.usageDate !== today;
+  const state = {
+    queue: fresh ? {} : (s.queue || {}),
+    usageToday: fresh ? {} : (s.usageToday || {}),
+    log: fresh ? {} : (s.log || {}),
+    usageDate: today,
+    breakSeconds: (s && s.breakSeconds) || BREAK_SECONDS,
+    dailyLimit: (s && s.dailyLimit) || DAILY_LIMIT,
+    adminLog: (s && s.adminLog) || {},
+    swaps: fresh ? {} : ((s && s.swaps) || {}),
+    history: Object.assign({}, (s && s.history) || {})
+  };
+  if(fresh && s && s.usageDate && s.log) state.history[s.usageDate] = s.log;
+  return state;
+}
+function queueArray_(state){
+  return Object.keys(state.queue || {}).map(id => ({ id, ...state.queue[id] }));
+}
+function logArray_(state){
+  return Object.keys(state.log || {}).map(id => ({ id, ...state.log[id] }))
+    .sort((a,b) => b.endedAt - a.endedAt);
+}
+
+async function guardedTransaction_(mutate, failMessage){
+  try{
+    const res = await runTransaction(stateRef, (current) => mutate(shapeState_(current)));
+    if(!res.committed && failMessage) showPopup_(failMessage);
+    return res.committed;
+  }catch(e){
+    showPopup_('حصل خطأ، جرب تاني');
+    return false;
+  }
+}
+
+// ---------- combo بحث بالاسم (بيتجاهل أ/ا/إ و ة/ه و ى/ي) ----------
+function attachCombo_(inputId){
+  const inp = document.getElementById(inputId);
+  const wrap = inp.parentElement;
+  const box = document.createElement('div');
+  box.className = 'combo-options hidden';
+  wrap.appendChild(box);
+  const hide = () => box.classList.add('hidden');
+  function show(){
+    const q = normAr_(inp.value);
+    if(!q){ hide(); return; }
+    const matches = rosterNames.filter(n => normAr_(n).includes(q)).slice(0, 8);
+    box.innerHTML = '';
+    if(!matches.length){
+      box.innerHTML = '<div class="combo-empty">مفيش اسم يطابق البحث</div>';
+    }else{
+      matches.forEach(n => {
+        const opt = document.createElement('div');
+        opt.className = 'combo-option';
+        opt.textContent = n;
+        opt.addEventListener('click', () => { inp.value = n; hide(); });
+        box.appendChild(opt);
+      });
+    }
+    box.classList.remove('hidden');
+  }
+  inp.addEventListener('input', show);
+  inp.addEventListener('focus', () => { if(inp.value) show(); });
+  document.addEventListener('click', (e) => { if(!wrap.contains(e.target)) hide(); });
+}
+['usageName','adminAddName','violationName'].forEach(attachCombo_);
+
+// ---------- login UI ----------
+document.getElementById('tabUser').addEventListener('click', () => setLoginMode('user'));
+document.getElementById('tabAdmin').addEventListener('click', () => setLoginMode('admin'));
+document.getElementById('areaTab1').addEventListener('click', () => setArea(1));
+document.getElementById('areaTab2').addEventListener('click', () => setArea(2));
+function setLoginMode(mode){
+  loginMode = mode;
+  const isAdmin = mode === 'admin';
+  document.getElementById('tabUser').classList.toggle('active', !isAdmin);
+  document.getElementById('tabAdmin').classList.toggle('active', isAdmin);
+  document.getElementById('areaField').style.display = isAdmin ? 'none' : '';
+  document.getElementById('pcField').style.display = isAdmin ? 'none' : '';
+  document.getElementById('pcInput').value = '';
+  document.getElementById('loginBtn').textContent = isAdmin ? 'دخول Dashboard' : 'دخول';
+  document.getElementById('loginError').textContent = '';
+
+  const pinInput = document.getElementById('pinInput');
+  pinInput.value = '';
+  if(isAdmin){
+    document.getElementById('pinLabel').textContent = 'كود الأدمن (4 أرقام)';
+    pinInput.maxLength = 4;
+    pinInput.placeholder = '••••';
+    pinInput.style.letterSpacing = '8px';
+    pinInput.style.fontSize = '22px';
+    document.getElementById('pinHint').textContent = 'الدخول على الـ Dashboard للأدمن بس، بالكود الخاص بيك.';
+  }else{
+    document.getElementById('pinLabel').textContent = 'الرقم القومي (14 رقم)';
+    pinInput.maxLength = 14;
+    pinInput.placeholder = '••••••••••••••';
+    pinInput.style.letterSpacing = '3px';
+    pinInput.style.fontSize = '19px';
+    document.getElementById('pinHint').textContent = 'اكتب الرقم القومي بتاعك زي ما هو مسجل في الشيت عشان تدخل.';
+  }
+}
+function setArea(a){
+  loginArea = a;
+  document.getElementById('areaTab1').classList.toggle('active', a===1);
+  document.getElementById('areaTab2').classList.toggle('active', a===2);
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('pcInput').addEventListener('input', (e) => { e.target.value = cleanPc_(e.target.value); });
+
+// ---------- searchable name combo (تسجيل الدخول) ----------
+const nameSearch = document.getElementById('nameSearch');
+const nameOptions = document.getElementById('nameOptions');
+const loginNameHidden = document.getElementById('loginName');
+
+nameSearch.addEventListener('input', () => {
+  loginNameHidden.value = '';
+  const q = normAr_(nameSearch.value);
+  if(!q){ nameOptions.classList.add('hidden'); return; }
+  const matches = rosterNames.filter(n => normAr_(n).includes(q)).slice(0, 8);
+  nameOptions.innerHTML = '';
+  if(matches.length === 0){
+    nameOptions.innerHTML = '<div class="combo-empty">مفيش اسم يطابق البحث</div>';
+  }else{
+    matches.forEach(n => {
+      const opt = document.createElement('div');
+      opt.className = 'combo-option';
+      opt.textContent = n;
+      opt.addEventListener('click', () => {
+        nameSearch.value = n;
+        loginNameHidden.value = n;
+        nameOptions.classList.add('hidden');
+      });
+      nameOptions.appendChild(opt);
+    });
+  }
+  nameOptions.classList.remove('hidden');
+});
+nameSearch.addEventListener('focus', () => { if(nameSearch.value) nameOptions.classList.remove('hidden'); });
+document.addEventListener('click', (e) => {
+  if(!document.getElementById('nameCombo').contains(e.target)) nameOptions.classList.add('hidden');
+});
+
+async function loadRoster(){
+  const errBox = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  try{
+    rosterNames = await runAsync('getNamesList');
+    if(!rosterNames || rosterNames.length === 0){
+      nameSearch.placeholder = 'مفيش أسماء متسجلة في الشيت';
+      return;
+    }
+    nameSearch.placeholder = 'اكتب اسمك للبحث...';
+    nameSearch.disabled = false;
+    btn.disabled = false;
+  }catch(e){
+    errBox.textContent = 'مقدرتش أجيب قايمة الأسماء، اعمل ريفريش للصفحة';
+  }
+}
+loadRoster();
+
+async function doLogin(){
+  const nameRaw = loginNameHidden.value;
+  const pin = document.getElementById('pinInput').value.trim();
+  const pc = loginMode === 'user' ? cleanPc_(document.getElementById('pcInput').value) : '';
+  const errBox = document.getElementById('loginError');
+  errBox.textContent = '';
+  if(!nameRaw){ errBox.textContent = 'اختار اسمك من قايمة البحث'; return; }
+  if(loginMode === 'user' && !loginArea){ errBox.textContent = 'اختار الـ Area بتاعتك'; return; }
+  if(loginMode === 'user' && !pc){ errBox.textContent = 'اكتب رقم الجهاز اللي قاعد عليه'; return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  try{
+    const fn = loginMode === 'admin' ? 'loginAdmin' : 'login';
+    const res = await runAsync(fn, nameRaw, pin);
+    if(!res.success){ errBox.textContent = res.error; return; }
+    myKey = res.key; myDisplayName = res.displayName; myMode = loginMode;
+    myArea = loginMode === 'user' ? loginArea : 1;
+    myPc = pc;
+    try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify({ key: myKey, displayName: myDisplayName, mode: myMode, area: myArea, pc: myPc })); }catch(e){}
+    enterApp_();
+  }catch(e){
+    errBox.textContent = 'حصل خطأ، جرب تاني';
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+// لو الموظف أصلاً في الطابور، بنحدّث رقم الجهاز بتاعه بالرقم الجديد
+async function syncPc_(){
+  if(myMode !== 'user' || !myPc) return;
+  await guardedTransaction_((state) => {
+    const e = queueArray_(state).find(p => normalize(p.name) === myKey);
+    if(!e || e.pc === myPc) return;
+    state.queue[e.id].pc = myPc;
+    return state;
+  });
+}
+
+function enterApp_(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  lastSignature = null; lastAdminSignature = null;
+  if(myMode === 'admin'){
+    adminSeenPending = null;
+    document.getElementById('adminDashboard').classList.remove('hidden');
+    document.getElementById('reportMonth').value = todayStr_().slice(0,7);
+    openDays.add(todayStr_());
+    renderAdmin();
+    if(!adminBreakTickTimer) adminBreakTickTimer = setInterval(renderAdminBreakCards, 1000);
+  }else{
+    statsMonth = null;
+    document.getElementById('statsMonthInput').value = todayStr_().slice(0,7);
+    document.getElementById('dashboard').classList.remove('hidden');
+    render();
+    syncPc_();
+  }
+}
+
+function resetLoginScreen(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  myKey = null; myDisplayName = null; lastSignature = null; lastAdminSignature = null;
+  myPc = '';
+  document.getElementById('pcInput').value = '';
+  lastViolated = false;
+  lastPaused = false;
+  lastExtKey = '';
+  lastSkipKey = '';
+  lastJoinKey = null;
+  adminSeenPending = null;
+  lastTurnNotifiedId = null; myTurnTrack = null;
+  shownSwapInId = null; hideSwapModal_();
+  document.getElementById('toastBox').innerHTML = '';
+  loginArea = null; setArea(0);
+  document.getElementById('pinInput').value = '';
+  nameSearch.value = ''; loginNameHidden.value = '';
+  setLoginMode('user');
+  document.getElementById('loginScreen').classList.remove('hidden');
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  document.getElementById('dashboard').classList.add('hidden');
+  resetLoginScreen();
+});
+document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+  clearInterval(adminBreakTickTimer); adminBreakTickTimer = null;
+  adminOnBreak = { 1: [], 2: [] }; replaceId = null;
+  document.getElementById('adminDashboard').classList.add('hidden');
+  resetLoginScreen();
+});
+
+// ---------- user tabs ----------
+document.getElementById('userTabs').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-utab]'); if(!t) return;
+  document.querySelectorAll('#userTabs .login-tab').forEach(x => x.classList.toggle('active', x === t));
+  document.getElementById('userTabQueue').classList.toggle('hidden', t.dataset.utab !== 'Queue');
+  document.getElementById('userTabStats').classList.toggle('hidden', t.dataset.utab !== 'Stats');
+});
+document.getElementById('statsMonthInput').addEventListener('change', (e) => {
+  statsMonth = e.target.value || null;
+  lastSignature = null; render();
+});
+
+// ---------- تقدير وقت الدور + فحص التعارض مع الإيقاف المجدول ----------
+function estSeconds_(position, q, area){
+  const cap = capOf_(area);
+  const act = q.filter(p => p.status === 'onbreak' || p.status === 'pending');
+  const free = Math.max(cap - act.length, 0);
+  if(position <= free) return 0;
+  const rems = act
+    .map(p => p.status === 'onbreak' ? Math.max(allowedSec_(p) - (Date.now() - p.startedAt) / 1000, 0) : BREAK_SECONDS)
+    .sort((a,b) => a - b);
+  const k = position - free;
+  if(!rems.length) return Math.ceil(k / cap) * BREAK_SECONDS;
+  const m = rems.length;
+  return rems[(k - 1) % m] + Math.floor((k - 1) / m) * BREAK_SECONDS;
+}
+// نفس التقدير بس بياخد في الاعتبار إن الإيقاف المجدول الشغال دلوقتي هيأخر الكل لحد ما يخلص
+function estWithPause_(position, q, area){
+  let est = estSeconds_(position, q, area);
+  if(schedPaused_()){
+    const n = nowT_();
+    const endAct = pauseEndFrom_(n);
+    const cap = capOf_(area);
+    est = Math.max(est, (endAct - n) * 60 + Math.floor((position - 1) / cap) * BREAK_SECONDS);
+  }
+  return est;
+}
+// لو الشخص حجز دلوقتي (آخر واحد في الطابور): هل وقت بريكه المتوقع هيتعارض مع إيقاف مجدول؟
+function joinCheck_(state, area){
+  const all = queueArray_(state).filter(p => areaOf_(p) === area);
+  const position = all.filter(p => p.status === 'waiting').length + 1;
+  const n = nowT_();
+  let startT = n + estSeconds_(position, all, area) / 60;
+  if(schedPaused_()){
+    const endAct = pauseEndFrom_(n);
+    startT = Math.max(startT, endAct + Math.floor((position - 1) / capOf_(area)) * BREAK_SECONDS / 60);
+  }
+  const endT = startT + BREAK_SECONDS / 60;
+  const hit = pauseIntervals_()
+    .filter(iv => iv.a < endT && iv.b > startT + 1e-6)
+    .sort((x, y) => x.a - y.a)[0];
+  return {
+    conflict: !!hit,
+    startLabel: hhmmFromT_(startT),
+    from: hit ? hit.s.from : '',
+    to: hit ? hit.s.to : ''
+  };
+}
+function conflictMsg_(jc){
+  return 'مينفعش تحجز دور دلوقتي لأن دورك المتوقع (حوالي ' + jc.startLabel + ') هيتعارض مع إيقاف مجدول من '
+    + fmtHM_(jc.from) + ' لحد ' + fmtHM_(jc.to) + '. تقدر تطلب تبديل مع حد من اللي في الطابور.';
+}
+
+// ---------- user actions ----------
+async function joinQueue(){
+  if(violationsData[vkey_(myKey)]){ showPopup_(VIOLATION_MSG, 'الشورت بريك موقوف'); return; }
+  if(manualPaused_()){ showPopup_(pauseMsg_(), 'الطابور موقوف'); return; }
+  const usedNow = sharedState ? (shapeState_(sharedState).usageToday[myKey] || 0) : 0;
+  if(secondBreakLocked_(usedNow)){ showPopup_(SECOND_MSG, 'البريك التاني لسه مفتحش'); return; }
+  if(sharedState){
+    const jc = joinCheck_(shapeState_(sharedState), myArea);
+    if(jc.conflict){ showPopup_(conflictMsg_(jc), 'مينفعش تحجز دلوقتي'); return; }
+  }
+  await guardedTransaction_((state) => {
+    if(violationsData[vkey_(myKey)]) return;
+    if(manualPaused_()) return;
+    const used = state.usageToday[myKey] || 0;
+    if(used >= state.dailyLimit) return;
+    if(secondBreakLocked_(used)) return;
+    const already = queueArray_(state).some(p => normalize(p.name) === myKey);
+    if(already) return;
+    if(joinCheck_(state, myArea).conflict) return;
+    state.queue[newId_()] = { name: myDisplayName, area: myArea, pc: myPc, status: 'waiting', joinedAt: Date.now(), startedAt: null };
+    state.usageToday[myKey] = used + 1;
+    return state;
+  }, 'مقدرتش أحجز لك دور: يمكن خلصت اليوزات، أو انت بالفعل في الطابور، أو دورك هيتعارض مع إيقاف مجدول');
+}
+
+async function requestBreak(id){
+  if(violationsData[vkey_(myKey)]){ showPopup_(VIOLATION_MSG, 'الشورت بريك موقوف'); return; }
+  if(isPaused_()){ showPopup_(pausePopupMsg_(), manualPaused_() ? 'الطابور موقوف' : 'إيقاف مجدول'); return; }
+  await guardedTransaction_((state) => {
+    if(violationsData[vkey_(myKey)]) return;
+    if(isPaused_()) return;
+    const entry = state.queue[id];
+    if(!entry || normalize(entry.name) !== myKey) return;
+    const area = areaOf_(entry);
+    const q = queueArray_(state).filter(p => areaOf_(p) === area);
+    const active = q.filter(p => p.status === 'onbreak' || p.status === 'pending').length;
+    const free = capOf_(area) - active;
+    if(free <= 0) return;
+    const waiting = q.filter(p => p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
+    const idx = waiting.findIndex(p => p.id === id);
+    if(idx < 0 || idx >= free) return;
+    entry.startedAt = Date.now();
+    delete entry.turnAt;
+    if(settingsData.autoApprove){
+      entry.status = 'onbreak';
+      logAdmin_(state, 'موافقة تلقائية على بريك', entry.name, 'Area ' + area, 'النظام');
+    }else{
+      entry.status = 'pending';
+    }
+    return state;
+  }, 'لسه مش دورك');
+}
+
+async function endBreak(id){
+  await guardedTransaction_((state) => {
+    const entry = state.queue[id];
+    if(!entry || normalize(entry.name) !== myKey) return;
+    const startedAt = Number(entry.startedAt);
+    const now = Date.now();
+    const allowed = state.breakSeconds + (Number(entry.extra) || 0);
+    const late = (now - startedAt) / 1000 > allowed;
+    state.log[newId_()] = { name: entry.name, area: areaOf_(entry), pc: entry.pc || '', startedAt, endedAt: now, late };
+    delete state.queue[id];
+    return state;
+  });
+}
+
+async function leaveQueue(id){
+  await guardedTransaction_((state) => {
+    const entry = state.queue[id];
+    if(!entry || normalize(entry.name) !== myKey) return;
+    if(entry.status !== 'waiting' && entry.status !== 'pending') return;
+    delete state.queue[id];
+    return state;
+  });
+}
+
+// طلب تمديد البريك (مرة واحدة في البريك الواحد)
+async function requestExtend(id){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || normalize(e.name) !== myKey || e.status !== 'onbreak') return;
+    if(e.extReq || e.extDone) return;
+    e.extReq = { at: Date.now() };
+    return state;
+  }, 'مقدرتش أبعت طلب التمديد');
+}
+
+// طلب تخطي الطابور والنزول دلوقتي (بموافقة الأدمن)
+async function requestSkip(id){
+  if(isPaused_()){ showPopup_(pausePopupMsg_(), manualPaused_() ? 'الطابور موقوف' : 'إيقاف مجدول'); return; }
+  await guardedTransaction_((state) => {
+    if(isPaused_()) return;
+    const e = state.queue[id];
+    if(!e || normalize(e.name) !== myKey || e.status !== 'waiting') return;
+    if(e.skipReq) return;
+    delete e.skipDone;
+    e.skipReq = { at: Date.now() };
+    return state;
+  }, 'مقدرتش أبعت طلب التخطي');
+}
+async function cancelSkip(id){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || normalize(e.name) !== myKey || !e.skipReq) return;
+    delete e.skipReq;
+    return state;
+  });
+}
+
+// ---------- صوت + إشعار الدور ----------
+let audioCtx = null;
+let notifAsked = false;
+function unlockAudio_(){
+  try{
+    if(!audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); }
+    if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }catch(e){}
+  if(!notifAsked){
+    notifAsked = true;
+    try{ if('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }catch(e){}
+  }
+}
+['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, unlockAudio_, { passive: true }));
+function winNotify(title, body, tag){
+  if(document.hasFocus()) return; // لو الصفحة قدامك، الـ toast والصوت كفاية
+  try{
+    if('Notification' in window && Notification.permission === 'granted'){
+      const n = new Notification(title, { body: body, tag: tag, requireInteraction: true });
+      n.onclick = () => { window.focus(); n.close(); };
+    }
+  }catch(e){}
+}
+function playTurnSound_(){
+  unlockAudio_();
+  if(!audioCtx) return;
+  const t0 = audioCtx.currentTime;
+  [0, 0.35, 0.7].forEach((off, i) => {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.value = i === 2 ? 1175 : 880;
+    g.gain.setValueAtTime(0.0001, t0 + off);
+    g.gain.exponentialRampToValueAtTime(0.35, t0 + off + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + 0.3);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t0 + off); o.stop(t0 + off + 0.32);
+  });
+}
+function turnLeftNow_(){
+  const me = (lastState.queue || []).find(p => normalize(p.name) === myKey);
+  return me && me.turnAt ? TURN_SECONDS - (Date.now() - me.turnAt) / 1000 : TURN_SECONDS;
+}
+
+// ---------- Toast (إشعار تحت يمين الشاشة) ----------
+function showToast_(o){
+  const box = document.getElementById('toastBox');
+  if(o.id){ const old = box.querySelector('[data-toast="' + o.id + '"]'); if(old) old.remove(); }
+  const el = document.createElement('div');
+  el.className = 'toast ' + (o.kind || '');
+  if(o.id) el.setAttribute('data-toast', o.id);
+  el.innerHTML = '<button class="toast-x" aria-label="إغلاق">×</button>'
+    + '<div class="toast-title">' + escapeHtml(o.title || '') + '</div>'
+    + '<div class="toast-text">' + (o.html ? o.html : escapeHtml(o.text || '')) + '</div>'
+    + (o.actions || '');
+  el.querySelector('.toast-x').addEventListener('click', () => el.remove());
+  box.appendChild(el);
+  if(!o.sticky) setTimeout(() => el.remove(), o.ms || 9000);
+}
+function removeToast_(id){
+  const e = document.querySelector('#toastBox [data-toast="' + id + '"]');
+  if(e) e.remove();
+}
+
+function notifyTurn_(entryId){
+  playTurnSound_();
+  try{ if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]); }catch(e){}
+  winNotify('دورك جه!', 'اطلب البريك خلال 5 دقايق وإلا دورك هيتلغي', 'sb-turn');
+  showTurnToast_(entryId);
+}
+function showTurnToast_(entryId){
+  showToast_({
+    id: 'turn', kind: 'mint', sticky: true, title: 'دورك جه!',
+    html: settingsData.autoCancelOff
+      ? 'اطلب البريك دلوقتي.'
+      : 'اطلب البريك خلال <b id="toastTurnTimer">' + fmtTime(Math.max(turnLeftNow_(), 0)) + '</b> وإلا دورك هيتلغي (ومش هيتحسب من اليوزات بتاعتك).',
+    actions: '<button class="toast-btn" onclick="requestBreak(\'' + entryId + '\')">اطلب البريك</button>'
+  });
+}
+
+// ---------- مهلة الدور: أي شاشة مفتوحة (يوزر أو أدمن) بتنفذها ----------
+// أول N واحد في الانتظار في كل Area (N = الأماكن الفاضية في البريك) دورهم جه.
+function turnEligibleIds_(state){
+  const all = queueArray_(state);
+  const ids = new Set();
+  [1,2].forEach(a => {
+    const q = all.filter(p => areaOf_(p) === a);
+    const active = q.filter(p => p.status === 'onbreak' || p.status === 'pending').length;
+    const free = Math.max(capOf_(a) - active, 0);
+    if(!free) return;
+    q.filter(p => p.status === 'waiting').sort((x,y) => x.joinedAt - y.joinedAt)
+      .slice(0, free).forEach(p => ids.add(p.id));
+  });
+  return ids;
+}
+
+// ---------- منطق التبديل (مشترك) ----------
+function isOpenSwap_(r){ return !!r && (r.status === 'pending' || r.status === 'adminwait'); }
+// هل الطلب لسه صالح للتنفيذ دلوقتي؟
+function swapValid_(state, r){
+  const to = state.queue[r.toId];
+  if(!to || to.status !== 'waiting' || normalize(to.name) !== r.toKey) return false;
+  if(r.kind === 'takeover'){
+    const key = r.fromKey;
+    if(queueArray_(state).some(p => normalize(p.name) === key)) return false;
+    if(violationsData[vkey_(key)]) return false;
+    const used = state.usageToday[key] || 0;
+    if(used >= state.dailyLimit || secondBreakLocked_(used)) return false;
+    return true;
+  }
+  const from = state.queue[r.fromId];
+  if(!from || from.status !== 'waiting' || normalize(from.name) !== r.fromKey) return false;
+  if(areaOf_(from) !== areaOf_(to)) return false;
+  return r.kind === 'turn' ? from.joinedAt < to.joinedAt : to.joinedAt < from.joinedAt;
+}
+// بينفذ التبديل (لازم swapValid_ تكون true قبله)
+function applySwap_(state, r, who){
+  const to = state.queue[r.toId];
+  if(r.kind === 'takeover'){
+    state.usageToday[r.fromKey] = (state.usageToday[r.fromKey] || 0) + 1;
+    const tu = state.usageToday[r.toKey] || 0;
+    if(tu <= 1) delete state.usageToday[r.toKey]; else state.usageToday[r.toKey] = tu - 1;
+    const oldName = to.name;
+    to.name = r.fromName;
+    if(r.fromPc) to.pc = r.fromPc; else delete to.pc;
+    delete to.turnAt; delete to.skipReq; delete to.skipDone;
+    logAdmin_(state, 'أخد مكان في الطابور', r.fromName, 'بدل ' + oldName + ' · Area ' + areaOf_(to), who);
+  }else{
+    const from = state.queue[r.fromId];
+    const t = from.joinedAt; from.joinedAt = to.joinedAt; to.joinedAt = t;
+    delete from.turnAt; delete to.turnAt;
+    logAdmin_(state, 'موافقة على تبديل', to.name, 'مع ' + from.name + ' · Area ' + areaOf_(to), who);
+  }
+  r.status = 'approved'; r.resolvedAt = Date.now();
+}
+// بيرجّع 'delete' أو 'void' لو الطلب محتاج تنضيف، وإلا null
+function swapFix_(state, id, now){
+  const r = state.swaps && state.swaps[id];
+  if(!r) return null;
+  if(r.status === 'pending'){
+    const t = state.queue[r.toId];
+    const tOk = t && t.status === 'waiting' && normalize(t.name) === r.toKey;
+    if(r.kind === 'takeover'){
+      if(queueArray_(state).some(p => normalize(p.name) === r.fromKey)) return 'delete';
+      return tOk ? null : 'void';
+    }
+    const f = state.queue[r.fromId];
+    const fOk = f && f.status === 'waiting' && normalize(f.name) === r.fromKey;
+    if(!fOk) return 'delete';
+    if(!tOk) return 'void';
+    return null;
+  }
+  if(r.status === 'adminwait') return swapValid_(state, r) ? null : 'void';
+  if(now - (r.resolvedAt || r.at || 0) > 10 * 60 * 1000) return 'delete';
+  return null;
+}
+async function turnHousekeeping_(){
+  if(housekeepingBusy || !myKey || !sharedState) return;
+  const s = shapeState_(sharedState);
+  const paused = isPaused_() || !!settingsData.autoCancelOff; // مؤقت الدور مش شغال لو الطابور موقوف أو الإلغاء التلقائي موقوف
+  const elig = turnEligibleIds_(s);
+  const now = Date.now();
+  const need = queueArray_(s).some(p => {
+    if(p.status !== 'waiting') return false;
+    const isElig = elig.has(p.id);
+    if(p.turnAt && (!isElig || paused)) return true;
+    if(isElig && !paused && !p.turnAt) return true;
+    if(isElig && !paused && p.turnAt && now - p.turnAt > TURN_SECONDS * 1000) return true;
+    return false;
+  });
+  const needSwap = Object.keys(s.swaps || {}).some(id => swapFix_(s, id, now));
+  if(!need && !needSwap) return;
+  housekeepingBusy = true;
+  try{
+    await new Promise(r => setTimeout(r, Math.random() * 1200)); // يقلل التزاحم بين الشاشات
+    await runTransaction(stateRef, (current) => {
+      const st = shapeState_(current);
+      const paused2 = isPaused_() || !!settingsData.autoCancelOff;
+      const elig2 = turnEligibleIds_(st);
+      const t = Date.now();
+      let changed = false;
+      Object.keys(st.queue).forEach(id => {
+        const e = st.queue[id];
+        if(e.status !== 'waiting') return;
+        const isElig = elig2.has(id);
+        if(e.turnAt && (!isElig || paused2)){ delete e.turnAt; changed = true; return; }
+        if(isElig && !paused2){
+          if(!e.turnAt){ e.turnAt = t; changed = true; }
+          else if(t - e.turnAt > TURN_SECONDS * 1000){
+            logAdmin_(st, 'إلغاء دور (ماطلبش البريك خلال 5 دقايق)', e.name, 'Area ' + areaOf_(e) + ' · مش هيتحسب من اليوزات', 'النظام');
+            const uk = normalize(e.name);
+            const uu = st.usageToday[uk] || 0;
+            if(uu <= 1) delete st.usageToday[uk]; else st.usageToday[uk] = uu - 1; // الاستخدام بيرجع
+            delete st.queue[id];
+            changed = true;
+          }
+        }
+      });
+      Object.keys(st.swaps || {}).forEach(id => {
+        const act = swapFix_(st, id, t);
+        if(act === 'delete'){ delete st.swaps[id]; changed = true; }
+        else if(act === 'void'){ st.swaps[id].status = 'void'; st.swaps[id].resolvedAt = t; changed = true; }
+      });
+      return changed ? st : undefined;
+    });
+  }catch(e){}
+  finally{ housekeepingBusy = false; }
+}
+
+// ---------- تبديل الأدوار ----------
+// 1) صاحب الدور: يبدّل مع أي حد مستني ورا في نفس الـ Area (kind = turn).
+// 2) أي حد حاجز متأخر: يطلب تبديل مع أي حد قبله (kind = later).
+// 3) حد مقدرش يحجز بسبب تعارض مع إيقاف مجدول: يطلب مكان حد في الطابور (kind = takeover).
+// في كل الحالات الطرف التاني بيوافق الأول، ولو "موافقة الأدمن على التبديل" شغالة بيتحول للأدمن بعد كده.
+function myWaitingList_(){
+  return (lastState.queue || []).filter(p => p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
+}
+function openSwapPicker(mode){
+  if(manualPaused_()){ showPopup_(pauseMsg_(), 'الطابور موقوف'); return; }
+  const w = myWaitingList_();
+  const meIdx = w.findIndex(p => normalize(p.name) === myKey);
+  let targets;
+  if(mode === 'takeover'){
+    if(meIdx >= 0) return;
+    targets = w;
+  }else{
+    if(meIdx < 0) return;
+    targets = mode === 'now' ? w.filter((p,i) => i > meIdx) : w.filter((p,i) => i < meIdx);
+  }
+  document.getElementById('pickTitle').textContent = mode === 'now' ? 'بدّل دورك مع مين؟'
+    : (mode === 'takeover' ? 'اطلب مكان مين؟' : 'اطلب تبديل مع مين؟');
+  document.getElementById('pickText').textContent = mode === 'now'
+    ? 'هيوصله طلب، ولو وافق هتاخد مكانه في الطابور ودوره هييجي دلوقتي.'
+    : (mode === 'takeover'
+      ? 'هيوصله طلب، ولو وافق هتاخد مكانه في الطابور وهو هيتشال منه (ويرجعله اليوز بتاعه).'
+      : 'هيوصله طلب، ولو وافق هتتبدلوا.');
+  document.getElementById('pickList').innerHTML = targets.length === 0
+    ? '<div class="combo-empty">مفيش حد متاح</div>'
+    : targets.map(p => {
+        const pos = w.findIndex(x => x.id === p.id) + 1;
+        return `<button class="pick-item" data-mode="${mode}" data-id="${attrEsc_(p.id)}"><span class="pick-pos">#${pos}</span><span class="pick-name">${escapeHtml(p.name)}</span></button>`;
+      }).join('');
+  document.getElementById('pickOverlay').classList.remove('hidden');
+}
+function closePicker_(){ document.getElementById('pickOverlay').classList.add('hidden'); }
+
+async function requestSwap(targetId, targetName, kind){
+  if(manualPaused_()){ showPopup_(pauseMsg_(), 'الطابور موقوف'); return; }
+  const takeover = kind === 'takeover';
+  const me = (lastState.queue || []).find(p => normalize(p.name) === myKey);
+  if(takeover ? !!me : !me) return;
+  const myId = me ? me.id : null;
+  const ok = await guardedTransaction_((state) => {
+    if(manualPaused_()) return;
+    const b = state.queue[targetId];
+    if(!b || b.status !== 'waiting') return;
+    const bKey = normalize(b.name);
+    let a = null;
+    if(takeover){
+      if(queueArray_(state).some(p => normalize(p.name) === myKey)) return;
+      if(violationsData[vkey_(myKey)]) return;
+      const used = state.usageToday[myKey] || 0;
+      if(used >= state.dailyLimit || secondBreakLocked_(used)) return;
+      if(areaOf_(b) !== myArea) return;
+    }else{
+      a = state.queue[myId];
+      if(!a || normalize(a.name) !== myKey) return;
+      if(a.status !== 'waiting' || areaOf_(a) !== areaOf_(b)) return;
+      if(kind === 'turn'){
+        if(!turnEligibleIds_(state).has(myId)) return;   // لازم دورك يكون جه فعلًا
+        if(!(a.joinedAt < b.joinedAt)) return;
+      }else if(!(b.joinedAt < a.joinedAt)) return;       // الطلب العادي: لحد قبلك بس
+    }
+    state.swaps = state.swaps || {};
+    let blocked = false;
+    Object.keys(state.swaps).forEach(id => {
+      const r = state.swaps[id];
+      if(isOpenSwap_(r) && (r.fromKey === myKey || r.toKey === bKey)) blocked = true;
+    });
+    if(blocked) return;
+    Object.keys(state.swaps).forEach(id => { if(state.swaps[id].fromKey === myKey) delete state.swaps[id]; });
+    const rec = {
+      toId: targetId, fromKey: myKey, toKey: bKey,
+      fromName: takeover ? myDisplayName : a.name, toName: b.name,
+      area: areaOf_(b), at: Date.now(), status: 'pending',
+      kind: takeover ? 'takeover' : (kind === 'turn' ? 'turn' : 'later')
+    };
+    if(takeover) rec.fromPc = myPc || '';
+    else rec.fromId = myId;
+    state.swaps[newId_()] = rec;
+    return state;
+  }, 'مقدرتش أبعت الطلب. يمكن عندك طلب شغال، أو الشخص ده عليه طلب تاني، أو الطابور اتغير.');
+  if(ok) showToast_({ id: 'swapres', kind: 'ok', title: 'اتبعت الطلب', text: 'بعتّ الطلب لـ ' + targetName + '، وهيجيلك إشعار لما يرد.' });
+}
+
+async function respondSwap(id, approve){
+  hideSwapModal_();
+  await guardedTransaction_((state) => {
+    const r = state.swaps && state.swaps[id];
+    if(!r || r.status !== 'pending' || r.toKey !== myKey) return;
+    const now = Date.now();
+    if(!approve){ r.status = 'rejected'; r.resolvedAt = now; return state; }
+    if(!swapValid_(state, r)){ r.status = 'void'; r.resolvedAt = now; return state; }
+    if(settingsData.swapNeedsAdmin){
+      r.status = 'adminwait'; r.at2 = now;   // محتاج موافقة الأدمن
+      return state;
+    }
+    applySwap_(state, r);
+    return state;
+  }, 'الطلب ده مبقاش موجود');
+}
+
+async function cancelSwapRequest(id){
+  await guardedTransaction_((state) => {
+    const r = state.swaps && state.swaps[id];
+    if(!r || r.fromKey !== myKey || !isOpenSwap_(r)) return;
+    delete state.swaps[id];
+    return state;
+  });
+}
+async function ackSwap_(id){
+  await guardedTransaction_((state) => {
+    const r = state.swaps && state.swaps[id];
+    if(!r || r.fromKey !== myKey || isOpenSwap_(r)) return;
+    delete state.swaps[id];
+    return state;
+  });
+}
+function showSwapModal_(r){
+  document.getElementById('swapTitle').textContent = r.kind === 'takeover' ? 'طلب مكانك في الطابور' : 'طلب تبديل';
+  document.getElementById('swapText').textContent = r.kind === 'takeover'
+    ? r.fromName + ' عايز ياخد مكانك في الطابور (رقم ' + r.toPos + '). لو وافقت هتتشال من الطابور ويرجعلك اليوز بتاعك.' + (r.needAdmin ? ' وبعد موافقتك الطلب بيروح للأدمن.' : '')
+    : r.fromName + ' (رقم ' + r.fromPos + ') عايز يبدّل مكانه مع مكانك (رقم ' + r.toPos + '). لو وافقت هتبقى رقم ' + r.fromPos + ' وهو هيبقى رقم ' + r.toPos + '.' + (r.kind === 'turn' ? ' ودورك هييجي دلوقتي.' : '') + (r.needAdmin ? ' وبعد موافقتك الطلب بيروح للأدمن.' : '');
+  document.getElementById('swapOverlay').classList.remove('hidden');
+  playTurnSound_();
+  winNotify(r.kind === 'takeover' ? 'طلب مكانك في الطابور' : 'طلب تبديل', r.fromName + ' باعتلك طلب', 'sb-swap');
+  try{ if(navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+}
+function hideSwapModal_(){ document.getElementById('swapOverlay').classList.add('hidden'); }
+function swapWaitHtml_(so){
+  const t = so.status === 'adminwait'
+    ? 'وافق ' + escapeHtml(so.toName) + '، ومستني موافقة الأدمن'
+    : (so.kind === 'takeover'
+      ? 'مستني رد ' + escapeHtml(so.toName) + ' على طلب مكانه'
+      : 'مستني رد ' + escapeHtml(so.toName) + ' على طلب التبديل');
+  return `<div class="muted-note" style="margin-top:14px">${t}</div><button class="btn btn-leave" onclick="cancelSwapRequest('${so.id}')">إلغاء الطلب</button>`;
+}
+
+// ---------- سجل عمليات الأدمن ----------
+function logAdmin_(state, action, target, details, who){
+  state.adminLog = state.adminLog || {};
+  state.adminLog[newId_()] = { at: Date.now(), admin: who || myDisplayName || '', action, target: target || '', details: details || '' };
+  const keys = Object.keys(state.adminLog);
+  if(keys.length > 500){
+    keys.sort((a,b) => state.adminLog[a].at - state.adminLog[b].at)
+        .slice(0, keys.length - 500)
+        .forEach(k => delete state.adminLog[k]);
+  }
+}
+
+// ---------- admin actions ----------
+// ملحوظة أمان: الكتابة مباشرة على فايربيز، فصلاحية الأدمن بتتحكم فيها الواجهة بس
+// (لحماية أقوى محتاج Firebase Auth).
+async function approveBreak(id){
+  await guardedTransaction_((state) => {
+    const entry = state.queue[id];
+    if(!entry || entry.status !== 'pending') return;
+    entry.status = 'onbreak';
+    entry.startedAt = Date.now();
+    logAdmin_(state, 'موافقة على بريك', entry.name, 'Area ' + areaOf_(entry));
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+async function rejectBreak(id){
+  await guardedTransaction_((state) => {
+    const entry = state.queue[id];
+    if(!entry || entry.status !== 'pending') return;
+    logAdmin_(state, 'رفض بريك', entry.name, 'Area ' + areaOf_(entry));
+    delete state.queue[id];
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+async function approveExt(id){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || e.status !== 'onbreak' || !e.extReq) return;
+    e.extra = (Number(e.extra) || 0) + EXT_SECONDS;
+    delete e.extReq;
+    e.extDone = 'approved';
+    logAdmin_(state, 'موافقة على تمديد بريك', e.name, '+' + (EXT_SECONDS / 60) + ' دقيقة · Area ' + areaOf_(e));
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+async function rejectExt(id){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || e.status !== 'onbreak' || !e.extReq) return;
+    delete e.extReq;
+    e.extDone = 'rejected';
+    logAdmin_(state, 'رفض تمديد بريك', e.name, 'Area ' + areaOf_(e));
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+// تخطي الطابور: لو فيه مكان فاضي في الـ Area بينزل بريك فورًا، وإلا بيبقى أول واحد في الطابور
+async function approveSkip(id){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || e.status !== 'waiting' || !e.skipReq) return;
+    const area = areaOf_(e);
+    const q = queueArray_(state).filter(p => areaOf_(p) === area);
+    const active = q.filter(p => p.status === 'onbreak' || p.status === 'pending').length;
+    const free = capOf_(area) - active;
+    const others = q.filter(p => p.status === 'waiting' && p.id !== id);
+    const minJ = others.length ? Math.min.apply(null, others.map(p => p.joinedAt)) : e.joinedAt;
+    e.joinedAt = Math.min(e.joinedAt, minJ - 1);
+    delete e.skipReq; delete e.turnAt;
+    e.skipDone = 'approved';
+    if(free > 0){
+      e.status = 'onbreak';
+      e.startedAt = Date.now();
+      logAdmin_(state, 'موافقة على تخطي الطابور', e.name, 'نزل البريك فورًا · Area ' + area);
+    }else{
+      logAdmin_(state, 'موافقة على تخطي الطابور', e.name, 'بقى أول واحد في الطابور (مفيش مكان فاضي) · Area ' + area);
+    }
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+async function rejectSkip(id){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || e.status !== 'waiting' || !e.skipReq) return;
+    delete e.skipReq;
+    e.skipDone = 'rejected';
+    logAdmin_(state, 'رفض تخطي الطابور', e.name, 'Area ' + areaOf_(e));
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+// موافقة/رفض الأدمن على التبديل (بعد ما الطرف التاني وافق)
+async function approveSwap(id){
+  await guardedTransaction_((state) => {
+    const r = state.swaps && state.swaps[id];
+    if(!r || r.status !== 'adminwait') return;
+    if(!swapValid_(state, r)){ r.status = 'void'; r.resolvedAt = Date.now(); return state; }
+    applySwap_(state, r);
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+async function rejectSwap(id){
+  await guardedTransaction_((state) => {
+    const r = state.swaps && state.swaps[id];
+    if(!r || r.status !== 'adminwait') return;
+    r.status = 'rejected'; r.byAdmin = true; r.resolvedAt = Date.now();
+    logAdmin_(state, 'رفض تبديل', r.fromName, 'مع ' + r.toName + ' · Area ' + (r.area || ''));
+    return state;
+  }, 'الطلب ده مش موجود دلوقتي');
+}
+async function adminRemove(id){
+  if(!confirm('متأكد إنك عايز تشيله من الطابور؟')) return;
+  await guardedTransaction_((state) => {
+    const entry = state.queue[id];
+    if(!entry) return;
+    logAdmin_(state, 'شال من الطابور', entry.name, 'Area ' + areaOf_(entry));
+    delete state.queue[id];
+    return state;
+  }, 'مش موجود دلوقتي');
+}
+async function adminMove(id, dir){
+  await guardedTransaction_((state) => {
+    const e = state.queue[id];
+    if(!e || e.status !== 'waiting') return;
+    const area = areaOf_(e);
+    const w = queueArray_(state).filter(p => areaOf_(p) === area && p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
+    const i = w.findIndex(p => p.id === id), j = i + dir;
+    if(i < 0 || j < 0 || j >= w.length) return;
+    const a = state.queue[w[i].id], b = state.queue[w[j].id];
+    const t = a.joinedAt; a.joinedAt = b.joinedAt; b.joinedAt = t;
+    logAdmin_(state, 'تغيير ترتيب', a.name, 'من #' + (i+1) + ' إلى #' + (j+1) + ' · Area ' + area);
+    return state;
+  });
+}
+function startReplace(id){
+  replaceId = id; lastAdminSignature = null; renderAdmin();
+  document.getElementById('adminAddName').focus();
+}
+function cancelReplace(){
+  replaceId = null; lastAdminSignature = null; renderAdmin();
+}
+async function adminAdd(){
+  const inp = document.getElementById('adminAddName');
+  const canon = canonName_(inp.value);
+  if(!canon){ alert('الاسم ده مش في قايمة الأسماء'); return; }
+  const area = Number(document.getElementById('adminAddArea').value) === 2 ? 2 : 1;
+  const rid = replaceId;
+  const ok = await guardedTransaction_((state) => {
+    if(queueArray_(state).some(p => normalize(p.name) === normalize(canon))) return;
+    if(rid){
+      const e = state.queue[rid];
+      if(!e || e.status !== 'waiting') return;
+      const oldName = e.name;
+      e.name = canon;
+      delete e.pc; // رقم الجهاز كان بتاع الشخص القديم
+      delete e.skipReq; delete e.skipDone;
+      logAdmin_(state, 'استبدال في الطابور', canon, 'بدل ' + oldName + ' · Area ' + areaOf_(e));
+    }else{
+      state.queue[newId_()] = { name: canon, area, status: 'waiting', joinedAt: Date.now(), startedAt: null };
+      logAdmin_(state, 'إضافة للطابور', canon, 'Area ' + area);
+    }
+    return state;
+  }, 'الاسم ده موجود في الطابور بالفعل أو الطلب مش متاح');
+  if(ok){ inp.value = ''; if(rid) cancelReplace(); }
+}
+async function addViolation(){
+  const inp = document.getElementById('violationName');
+  const canon = canonName_(inp.value);
+  if(!canon){ alert('الاسم ده مش في قايمة الأسماء'); return; }
+  try{ await set(ref(db, 'violations/' + vkey_(canon)), { name: canon, at: Date.now() }); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    Object.keys(state.queue).forEach(id => {
+      const e = state.queue[id];
+      if(normalize(e.name) === normalize(canon) && e.status !== 'onbreak') delete state.queue[id];
+    });
+    logAdmin_(state, 'إيقاف الشورت بريك', canon, '');
+    return state;
+  });
+  inp.value = '';
+}
+async function removeViolation(k){
+  const v = violationsData[k];
+  if(!v) return;
+  try{ await remove(ref(db, 'violations/' + k)); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, 'فتح الشورت بريك', v.name, '');
+    return state;
+  });
+}
+
+// ---------- إيقاف/فتح الطابور والبريك للكل ----------
+async function togglePause(){
+  const next = !settingsData.paused;
+  try{ await set(ref(db, 'settings/paused'), next); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, next ? 'إيقاف الطابور والبريك للكل' : 'فتح الطابور والبريك للكل', '', '');
+    return state;
+  });
+}
+
+// ---------- تشغيل/إيقاف الإلغاء التلقائي بعد 5 دقايق ----------
+async function toggleAutoCancel(){
+  const nextOff = !settingsData.autoCancelOff;
+  try{ await set(ref(db, 'settings/autoCancelOff'), nextOff); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, nextOff ? 'إيقاف الإلغاء التلقائي للدور' : 'تشغيل الإلغاء التلقائي للدور', '', '');
+    return state;
+  });
+}
+
+// ---------- الموافقة التلقائية على طلبات البريك ----------
+async function toggleAutoApprove(){
+  const next = !settingsData.autoApprove;
+  try{ await set(ref(db, 'settings/autoApprove'), next); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, next ? 'تشغيل الموافقة التلقائية' : 'إيقاف الموافقة التلقائية', '', '');
+    if(next){
+      // أي طلبات معلقة دلوقتي بتتوافق فورًا
+      Object.keys(state.queue).forEach(id => {
+        const e = state.queue[id];
+        if(e.status === 'pending'){ e.status = 'onbreak'; e.startedAt = Date.now(); }
+      });
+    }
+    return state;
+  });
+}
+
+// ---------- موافقة الأدمن على التبديل بين المستخدمين ----------
+async function toggleSwapAdmin(){
+  const next = !settingsData.swapNeedsAdmin;
+  try{ await set(ref(db, 'settings/swapNeedsAdmin'), next); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, next ? 'تفعيل موافقة الأدمن على التبديل' : 'إيقاف موافقة الأدمن على التبديل', '', '');
+    if(!next){
+      // الطلبات اللي مستنية الأدمن بتتنفذ فورًا (لو لسه صالحة)
+      Object.keys(state.swaps || {}).forEach(id => {
+        const r = state.swaps[id];
+        if(r.status !== 'adminwait') return;
+        if(swapValid_(state, r)) applySwap_(state, r, 'النظام');
+        else { r.status = 'void'; r.resolvedAt = Date.now(); }
+      });
+    }
+    return state;
+  });
+}
+
+// ---------- عدد الناس في البريك مع بعض (لكل Area) ----------
+async function adminCapStep(area, dir){
+  const cur = capOf_(area);
+  const next = Math.min(10, Math.max(1, cur + dir));
+  if(next === cur) return;
+  try{ await set(ref(db, 'settings/capacity/a' + area), next); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, 'تعديل عدد الناس في البريك', 'Area ' + area, cur + ' ← ' + next);
+    return state;
+  });
+}
+
+// ---------- رسالة الإيقاف المخصصة ----------
+async function savePauseMsg(clear){
+  const inp = document.getElementById('pauseMsgInput');
+  const v = clear ? '' : inp.value.trim().slice(0, 300);
+  try{
+    if(v) await set(ref(db, 'settings/pauseMessage'), v);
+    else await remove(ref(db, 'settings/pauseMessage'));
+  }catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  if(!v) inp.value = '';
+  await guardedTransaction_((state) => {
+    logAdmin_(state, v ? 'تعديل رسالة الإيقاف' : 'رجوع لرسالة الإيقاف الافتراضية', '', v);
+    return state;
+  });
+}
+
+// ---------- إيقاف مجدول ----------
+async function addSchedule(){
+  const from = document.getElementById('schFrom').value;
+  const to = document.getElementById('schTo').value;
+  const date = document.getElementById('schDate').value;
+  const msg = document.getElementById('schMsg').value.trim();
+  const f = hmToMin_(from), t = hmToMin_(to);
+  if(f < 0 || t < 0 || f === t){ alert('اختار وقت بداية ونهاية مختلفين'); return; }
+  if(date && f > t){ alert('الإيقاف في تاريخ محدد لازم يبدأ وينتهي في نفس اليوم'); return; }
+  try{ await set(ref(db, 'settings/schedules/' + newId_()), { from, to, date: date || '', msg }); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  document.getElementById('schMsg').value = '';
+  await guardedTransaction_((state) => {
+    logAdmin_(state, 'إضافة إيقاف مجدول', from + ' → ' + to, (date || 'كل يوم') + (msg ? ' · ' + msg : ''));
+    return state;
+  });
+}
+async function delSchedule(id){
+  const sc = (settingsData.schedules || {})[id];
+  if(!sc) return;
+  try{ await remove(ref(db, 'settings/schedules/' + id)); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, 'مسح إيقاف مجدول', sc.from + ' → ' + sc.to, sc.date || 'كل يوم');
+    return state;
+  });
+}
+
+// ---------- أدوات آخر الشيفت ----------
+async function adminClearQueue(){
+  if(!confirm('هتفضّي الطابور (كل المستنيين وطلبات الموافقة). اللي في البريك دلوقتي هيكمل لحد ما يخلص. متأكد؟')) return;
+  await guardedTransaction_((state) => {
+    let n = 0;
+    Object.keys(state.queue).forEach(id => {
+      if(state.queue[id].status !== 'onbreak'){ delete state.queue[id]; n++; }
+    });
+    state.swaps = {};
+    logAdmin_(state, 'تفضية الطابور', '', n + ' شخص');
+    return state;
+  });
+}
+async function adminResetUsage(){
+  if(!confirm('هتصفّر استخدام كل الناس النهارده. متأكد؟')) return;
+  await guardedTransaction_((state) => {
+    const n = Object.keys(state.usageToday).length;
+    state.usageToday = {};
+    logAdmin_(state, 'تصفير استخدام الكل', '', n + ' شخص');
+    return state;
+  });
+}
+
+// ---------- تعديل الاستخدام ----------
+async function adminSetUsage(key, value){
+  const v = Math.max(0, Math.floor(Number(value)));
+  if(!isFinite(v)) return;
+  await guardedTransaction_((state) => {
+    const cur = state.usageToday[key] || 0;
+    if(v === 0) delete state.usageToday[key];
+    else state.usageToday[key] = v;
+    logAdmin_(state, 'تعديل الاستخدام', key, cur + ' ← ' + v);
+    return state;
+  });
+}
+async function adminUsageStep(key, dir){
+  await guardedTransaction_((state) => {
+    const cur = state.usageToday[key] || 0;
+    const next = Math.max(0, cur + dir);
+    if(next === cur) return;
+    if(next === 0) delete state.usageToday[key];
+    else state.usageToday[key] = next;
+    logAdmin_(state, 'تعديل الاستخدام', key, cur + ' ← ' + next);
+    return state;
+  });
+}
+async function adminUsageForm(){
+  const inp = document.getElementById('usageName');
+  const val = document.getElementById('usageValue');
+  const canon = canonName_(inp.value);
+  if(!canon){ alert('الاسم ده مش في قايمة الأسماء'); return; }
+  if(val.value === '' || Number(val.value) < 0){ alert('اكتب رقم صحيح'); return; }
+  await adminSetUsage(normalize(canon), val.value);
+  inp.value = ''; val.value = '';
+}
+
+function waitInfo_(){
+  const q = lastState.queue || [];
+  const me = q.find(p => normalize(p.name) === myKey);
+  if(!me || me.status !== 'waiting') return null;
+  const w = q.filter(p => p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
+  const position = w.findIndex(p => p.id === me.id) + 1;
+  const active = q.filter(p => p.status === 'onbreak' || p.status === 'pending').length;
+  const free = Math.max(capOf_(lastState.area) - active, 0);
+  return { position, free, est: estWithPause_(position, q, lastState.area) };
+}
+
+// ---------- إحصائيات اليوزر ----------
+function myStats_(s){
+  const month = statsMonth || todayStr_().slice(0, 7);
+  const logs = Object.assign({}, s.history);
+  logs[s.usageDate] = s.log;
+  const rows = [];
+  Object.keys(logs).forEach(ds => {
+    if(ds.slice(0, 7) !== month) return;
+    Object.values(logs[ds] || {}).forEach(e => {
+      if(normalize(e.name) === myKey) rows.push({ ds, startedAt: e.startedAt, endedAt: e.endedAt, area: areaOf_(e), late: !!e.late });
+    });
+  });
+  rows.sort((a,b) => b.startedAt - a.startedAt);
+  return { month, total: rows.length, late: rows.filter(r => r.late).length, rows };
+}
+function renderStats_(st){
+  const onTime = st.total - st.late;
+  const rate = st.total ? Math.round(onTime * 100 / st.total) + '%' : '—';
+  document.getElementById('statsTitle').textContent = 'إحصائياتي · ' + st.month;
+  document.getElementById('statsGrid').innerHTML =
+    `<div class="stat-card"><div class="stat-value">${st.total}</div><div class="stat-label">بريكات الشهر</div></div>
+     <div class="stat-card"><div class="stat-value">${onTime}</div><div class="stat-label">في الميعاد</div></div>
+     <div class="stat-card red"><div class="stat-value">${st.late}</div><div class="stat-label">اتأخرت</div></div>
+     <div class="stat-card amber"><div class="stat-value">${rate}</div><div class="stat-label">نسبة الالتزام</div></div>`;
+  const list = document.getElementById('statsList');
+  const empty = document.getElementById('statsEmpty');
+  list.innerHTML = '';
+  if(!st.rows.length){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  st.rows.forEach(r => {
+    const li = document.createElement('li');
+    li.className = 'log-row';
+    li.innerHTML = `<span class="lname">${escapeHtml(r.ds)} <span class="tag">A${r.area}</span></span><span class="ltime">${hhmm_(r.startedAt)} - ${hhmm_(r.endedAt)}</span><span class="status-pill ${r.late?'status-late':'status-ok'}">${r.late?'اتأخر':'في الميعاد'}</span>`;
+    list.appendChild(li);
+  });
+}
+
+// زرار تخطي الطابور + حالته (للي مستني ودوره لسه ماجاش)
+function skipBlock_(e, paused){
+  if(paused) return '';
+  if(e.skipReq) return `<div class="muted-note" style="margin-top:14px">مستني موافقة الأدمن على تخطي الطابور...</div><button class="btn btn-leave" onclick="cancelSkip('${e.id}')">إلغاء طلب التخطي</button>`;
+  return `<button class="btn btn-leave" onclick="requestSkip('${e.id}')">أنزل بريك دلوقتي (تخطي الطابور بموافقة الأدمن)</button>`;
+}
+
+// ---------- user dashboard render ----------
+function render(){
+  if(!myKey || !sharedState) return;
+  const s = shapeState_(sharedState);
+  const all = queueArray_(s);
+  const myEntryAll = all.find(p => normalize(p.name) === myKey);
+  if(myEntryAll && myEntryAll.status === 'waiting' && myEntryAll.turnAt){
+    myTurnTrack = { id: myEntryAll.id, expiresAt: myEntryAll.turnAt + TURN_SECONDS * 1000 };
+  }else if(myEntryAll){
+    myTurnTrack = null;
+  }else if(myTurnTrack){
+    if(Date.now() >= myTurnTrack.expiresAt - 15000 && !settingsData.autoCancelOff){
+      showToast_({ id: 'cancel', kind: 'bad', ms: 20000, title: 'دورك اتلغى',
+        text: 'ما طلبتش البريك خلال 5 دقايق فدورك اتلغى. ومتحسبش من اليوزات بتاعتك، تقدر تدخل الطابور تاني.' });
+    }
+    myTurnTrack = null;
+  }
+  const area = myEntryAll ? areaOf_(myEntryAll) : myArea;
+  const q = all.filter(p => areaOf_(p) === area);
+  const swapsArr = Object.keys(s.swaps || {}).map(id => ({ id, ...s.swaps[id] }));
+  const byId = {}; all.forEach(p => { byId[p.id] = p; });
+  const wArea = all.filter(p => areaOf_(p) === area && p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
+  const posOf = id => wArea.findIndex(p => p.id === id) + 1;
+  const inReq = swapsArr.find(r => r.toKey === myKey && r.status === 'pending'
+    && byId[r.toId] && byId[r.toId].status === 'waiting'
+    && (r.kind === 'takeover' || (byId[r.fromId] && byId[r.fromId].status === 'waiting')));
+  const outReq = swapsArr.find(r => r.fromKey === myKey);
+  const swapIn = inReq ? { id: inReq.id, kind: inReq.kind || 'later', fromName: inReq.fromName, fromPos: posOf(inReq.fromId), toPos: posOf(inReq.toId), needAdmin: !!settingsData.swapNeedsAdmin } : null;
+  const swapOut = outReq ? { id: outReq.id, toName: outReq.toName, status: outReq.status, kind: outReq.kind || 'later', byAdmin: !!outReq.byAdmin } : null;
+  const manualP = manualPaused_();
+  const schedP = schedPaused_();
+  let joinCheck = null;
+  if(!myEntryAll && !violationsData[vkey_(myKey)]){
+    const jc = joinCheck_(s, area);
+    joinCheck = { conflict: jc.conflict, startLabel: jc.startLabel, from: jc.from, to: jc.to };
+  }
+  const state = {
+    queue: q,
+    area,
+    cap: capOf_(area),
+    usedToday: s.usageToday[myKey] || 0,
+    dailyLimit: DAILY_LIMIT,
+    breakSeconds: BREAK_SECONDS,
+    violated: !!violationsData[vkey_(myKey)],
+    paused: manualP || schedP,
+    manualPaused: manualP,
+    schedPaused: schedP,
+    resume: schedP ? resumeLabel_() : '',
+    pauseMsg: pausePopupMsg_(),
+    joinCheck,
+    secondLocked: secondBreakLocked_(s.usageToday[myKey] || 0),
+    swapIn,
+    swapOut,
+    autoCancel: !settingsData.autoCancelOff,
+    log: logArray_(s),
+    stats: myStats_(s)
+  };
+  const sig = JSON.stringify(state);
+  lastState = state;
+  if(sig === lastSignature) return;
+  lastSignature = sig;
+
+  if(state.violated && !lastViolated) showPopup_(VIOLATION_MSG, 'الشورت بريك موقوف');
+  lastViolated = state.violated;
+  if(state.paused && !lastPaused) showPopup_(state.pauseMsg, state.manualPaused ? 'الطابور موقوف' : 'إيقاف مجدول');
+  lastPaused = state.paused;
+
+  // طلبات التبديل: popup للي اتطلب منه، وإشعار بالنتيجة للي طلب
+  if(state.swapIn){
+    if(shownSwapInId !== state.swapIn.id){ shownSwapInId = state.swapIn.id; showSwapModal_(state.swapIn); }
+  }else if(shownSwapInId){
+    shownSwapInId = null; hideSwapModal_();
+  }
+  if(state.swapOut && state.swapOut.status !== 'pending' && state.swapOut.status !== 'adminwait' && !ackedSwaps.has(state.swapOut.id)){
+    const o = state.swapOut;
+    ackedSwaps.add(o.id);
+    const tk = o.kind === 'takeover';
+    if(o.status === 'approved') showToast_({ id: 'swapres', kind: 'ok', title: tk ? 'خدت مكانه' : 'التبديل تم', text: tk ? o.toName + ' وافق، وبقيت في الطابور مكانه.' : o.toName + ' وافق على التبديل، ومكانك في الطابور اتغير.' });
+    else if(o.status === 'rejected') showToast_({ id: 'swapres', kind: 'bad', title: tk ? 'الطلب اترفض' : 'التبديل اترفض', text: o.byAdmin ? 'الأدمن رفض الطلب.' : o.toName + ' رفض الطلب.' });
+    else showToast_({ id: 'swapres', kind: 'warn', title: 'الطلب مبقاش متاح', text: 'الطلب مع ' + o.toName + ' اتلغى لأن الطابور اتغير.' });
+    ackSwap_(o.id);
+  }
+
+  document.getElementById('whoName').textContent = 'أهلاً، ' + myDisplayName;
+  document.getElementById('usageLine').textContent = 'استخدمت ' + state.usedToday + ' من ' + DAILY_LIMIT + ' النهارده · Area ' + area;
+  document.getElementById('queueTitle').textContent = 'الطابور دلوقتي · Area ' + area;
+  renderStats_(state.stats);
+
+  const onBreakList = q.filter(p => p.status === 'onbreak');
+  const pendingList = q.filter(p => p.status === 'pending');
+  const waiting = q.filter(p => p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
+  const myEntry = q.find(p => normalize(p.name) === myKey);
+  const free = Math.max(state.cap - onBreakList.length - pendingList.length, 0);
+
+  // إشعار نتيجة طلب التمديد
+  const extKey = myEntry && myEntry.status === 'onbreak' ? (myEntry.extDone || '') : '';
+  if(extKey && extKey !== lastExtKey){
+    if(extKey === 'approved') showToast_({ id: 'ext', kind: 'ok', title: 'اتوافق على التمديد', text: 'اتضافت لك ' + (EXT_SECONDS / 60) + ' دقيقة على البريك.' });
+    else showToast_({ id: 'ext', kind: 'bad', title: 'التمديد اترفض', text: 'الأدمن رفض طلب تمديد البريك.' });
+  }
+  lastExtKey = extKey;
+
+  // إشعار نتيجة طلب تخطي الطابور
+  const skipKey = myEntry ? (myEntry.skipDone || '') : '';
+  if(skipKey && skipKey !== lastSkipKey){
+    if(skipKey === 'approved') showToast_({ id: 'skip', kind: 'ok', title: 'اتوافق على تخطيك', text: myEntry.status === 'onbreak' ? 'نزلت البريك.' : 'بقيت أول واحد في الطابور، وهتقدر تطلب البريك أول ما يفضى مكان.' });
+    else showToast_({ id: 'skip', kind: 'bad', title: 'طلب التخطي اترفض', text: 'الأدمن رفض طلب تخطي الطابور.' });
+  }
+  lastSkipKey = skipKey;
+
+  const schedBanner = state.schedPaused
+    ? `<div class="warn-note" style="margin-bottom:14px">الطابور في إيقاف مجدول لحد ${escapeHtml(state.resume)} — تقدر تحجز دور وهتقدر تطلب البريك بعد كده.</div>`
+    : '';
+
+  const myCard = document.getElementById('myCard');
+  let turnNow = false;
+
+  if(state.violated && !(myEntry && myEntry.status === 'onbreak')){
+    myCard.className = 'card';
+    myCard.innerHTML = `
+      <div class="big-name" style="color:var(--red)">الشورت بريك موقوف</div>
+      <div class="muted-note" style="margin-top:12px">${escapeHtml(VIOLATION_MSG)}</div>
+      <button class="btn btn-start" disabled>ادخل الطابور</button>`;
+  }else if(state.manualPaused && !(myEntry && (myEntry.status === 'onbreak' || myEntry.status === 'pending'))){
+    myCard.className = 'card';
+    myCard.innerHTML = `
+      <div class="big-name" style="color:var(--amber)">الطابور موقوف مؤقتًا</div>
+      <div class="muted-note" style="margin-top:12px">${escapeHtml(state.pauseMsg)}</div>
+      ${myEntry ? `<button class="btn btn-leave" onclick="leaveQueue('${myEntry.id}')">لغي مكاني</button>` : '<button class="btn btn-start" disabled>ادخل الطابور</button>'}`;
+  }else if(myEntry && myEntry.status === 'pending'){
+    myCard.className = 'card pending';
+    myCard.innerHTML = `
+      <div class="timer-label">بعت طلب البريك، مستني موافقة الأدمن...</div>
+      <button class="btn btn-leave" onclick="leaveQueue('${myEntry.id}')">لغي الطلب</button>`;
+  }else if(myEntry && myEntry.status === 'onbreak'){
+    const remaining = allowedSec_(myEntry) - (Date.now() - myEntry.startedAt)/1000;
+    let extBlock = '';
+    if(myEntry.extReq) extBlock = '<div class="muted-note" style="margin-top:14px">مستني رد الأدمن على طلب التمديد...</div>';
+    else if(myEntry.extDone === 'approved') extBlock = '<div class="muted-note" style="margin-top:14px">اتمدد البريك ' + (EXT_SECONDS / 60) + ' دقيقة ✓</div>';
+    else if(myEntry.extDone === 'rejected') extBlock = '<div class="muted-note" style="margin-top:14px">طلب التمديد اترفض</div>';
+    else extBlock = `<button class="btn btn-leave" onclick="requestExtend('${myEntry.id}')">اطلب تمديد ${EXT_SECONDS / 60} دقيقة</button>`;
+    myCard.className = 'card amber';
+    myCard.innerHTML = `
+      <div class="timer-label">${remaining>=0 ? 'باقي على البريك بتاعك' : 'اتأخرت عن الميعاد'}</div>
+      <div class="big-timer ${timerClass(remaining)}" id="myBigTimer">${fmtTime(remaining)}</div>
+      <button class="btn btn-end" onclick="endBreak('${myEntry.id}')">خلصت البريك</button>
+      ${extBlock}`;
+  }else if(myEntry && myEntry.status === 'waiting'){
+    const position = waiting.findIndex(p => p.id === myEntry.id) + 1;
+    const so = state.swapOut && (state.swapOut.status === 'pending' || state.swapOut.status === 'adminwait') ? state.swapOut : null;
+    if(position <= free && state.schedPaused){
+      // دورك جه بس الطابور في إيقاف مجدول: مفيش طلب بريك ولا مؤقت لحد ما الإيقاف يخلص
+      myCard.className = 'card';
+      myCard.innerHTML = `
+        <div class="big-name" style="color:var(--amber)">دورك جاي</div>
+        <div class="warn-note" style="margin-top:12px">الطابور في إيقاف مجدول. هتقدر تطلب البريك الساعة <b>${escapeHtml(state.resume)}</b>.</div>
+        <button class="btn btn-start" disabled>اطلب البريك</button>
+        <button class="btn btn-leave" onclick="leaveQueue('${myEntry.id}')">لغي مكاني</button>`;
+    }else if(position <= free){
+      turnNow = true;
+      if(lastTurnNotifiedId !== myEntry.id){ lastTurnNotifiedId = myEntry.id; notifyTurn_(myEntry.id); }
+      else if(lastAutoCancelFlag !== null && lastAutoCancelFlag !== state.autoCancel){ showTurnToast_(myEntry.id); }
+      const turnLeft = myEntry.turnAt ? TURN_SECONDS - (Date.now() - myEntry.turnAt) / 1000 : TURN_SECONDS;
+      const turnSwapBlock = so
+        ? swapWaitHtml_(so)
+        : (waiting.length > position ? `<button class="btn btn-leave" onclick="openSwapPicker('now')">بدّل دورك مع حد في الطابور</button>` : '');
+      myCard.className = 'card mint';
+      myCard.innerHTML = `
+        <div class="big-name">دورك جه!</div>
+        ${state.autoCancel ? `<div class="timer-label" style="margin-top:10px">اطلب البريك قبل ما دورك يتلغي، باقي</div>
+        <div class="big-timer ${timerClass(turnLeft)}" id="turnTimer" style="font-size:44px;margin:8px 0">${fmtTime(Math.max(turnLeft,0))}</div>` : '<div class="muted-note" style="margin-top:10px">اطلب البريك دلوقتي</div>'}
+        <button class="btn btn-start" onclick="requestBreak('${myEntry.id}')">اطلب البريك</button>
+        ${turnSwapBlock}
+        <button class="btn btn-leave" onclick="leaveQueue('${myEntry.id}')">لغي مكاني</button>`;
+    }else if(position === free + 1){
+      const est = estWithPause_(position, q, area);
+      myCard.className = 'card';
+      myCard.innerHTML = `
+        ${schedBanner}
+        <div class="timer-label">دورك جاي — هتقدر تطلب البريك خلال</div>
+        <div class="big-timer ${timerClass(est)}" id="myBigTimer">${fmtTime(Math.max(est,0))}</div>
+        <div class="muted-note">هتقدر تطلب البريك أول ما اللي قبلك يخلص</div>
+        ${skipBlock_(myEntry, state.paused)}`;
+    }else{
+      const est = estWithPause_(position, q, area);
+      const swapBlock = so ? swapWaitHtml_(so)
+        : `<button class="btn btn-leave" onclick="openSwapPicker('request')">اطلب تبديل مع حد قبلك</button>`;
+      myCard.className = 'card';
+      myCard.innerHTML = `
+        ${schedBanner}
+        <div class="timer-label">ترتيبك في الطابور: ${position}</div>
+        <div class="big-timer ok" id="myBigTimer">${fmtTime(est)}</div>
+        <div class="muted-note">تقدير تقريبي لحد ما يجيلك الدور</div>
+        ${swapBlock}
+        ${skipBlock_(myEntry, state.paused)}
+        <button class="btn btn-leave" onclick="leaveQueue('${myEntry.id}')">لغي مكاني</button>`;
+    }
+  }else{
+    const limitDone = state.usedToday >= DAILY_LIMIT;
+    const jc = state.joinCheck;
+    const conflict = !limitDone && !state.secondLocked && !!(jc && jc.conflict);
+    const canJoin = !limitDone && !state.secondLocked && !conflict;
+    const idleMsg = limitDone
+      ? 'خلصت اليوزات بتاعتك النهارده (' + DAILY_LIMIT + '/' + DAILY_LIMIT + ')'
+      : (state.secondLocked ? SECOND_MSG : 'مش في الطابور دلوقتي');
+    const so = state.swapOut && (state.swapOut.status === 'pending' || state.swapOut.status === 'adminwait') ? state.swapOut : null;
+    let extra = '';
+    if(conflict){
+      extra += `<div class="warn-note" style="margin-top:14px">${escapeHtml(conflictMsg_(jc))}</div>`;
+    }
+    if(so) extra += swapWaitHtml_(so);
+    else if(conflict && waiting.length) extra += `<button class="btn btn-leave" onclick="openSwapPicker('takeover')">اطلب مكان حد من الطابور</button>`;
+    myCard.className = 'card';
+    myCard.innerHTML = `
+      ${canJoin ? schedBanner : ''}
+      <div class="muted-note">${idleMsg}</div>
+      <button class="btn btn-start" ${canJoin?'':'disabled'} onclick="joinQueue()">ادخل الطابور</button>
+      ${extra}`;
+  }
+
+  if(!turnNow){ lastTurnNotifiedId = null; removeToast_('turn'); }
+  lastAutoCancelFlag = state.autoCancel;
+
+  const queueList = document.getElementById('queueList');
+  const emptyQueueNote = document.getElementById('emptyQueueNote');
+  queueList.innerHTML = '';
+  const rows = [];
+  onBreakList.forEach(p => rows.push({entry:p, tag:'في البريك', isBreak:true, isPending:false}));
+  pendingList.forEach(p => rows.push({entry:p, tag:'مستني موافقة', isBreak:false, isPending:true}));
+  waiting.forEach((p,i) => rows.push({entry:p, tag:'رقم '+(i+1), isBreak:false, isPending:false}));
+
+  if(rows.length===0){ emptyQueueNote.classList.remove('hidden'); }
+  else{
+    emptyQueueNote.classList.add('hidden');
+    rows.forEach(r => {
+      const isMine = normalize(r.entry.name) === myKey;
+      const li = document.createElement('li');
+      li.className = 'queue-row';
+      li.innerHTML = `<span class="name ${isMine?'mine':''}">${escapeHtml(r.entry.name)}${isMine?' (انت)':''}</span><span class="tag ${r.isBreak?'onbreak':''} ${r.isPending?'pending':''}">${r.tag}</span>`;
+      queueList.appendChild(li);
+    });
+  }
+
+  const logList = document.getElementById('logList');
+  const emptyLogNote = document.getElementById('emptyLogNote');
+  logList.innerHTML = '';
+  if(state.log.length===0){ emptyLogNote.classList.remove('hidden'); }
+  else{
+    emptyLogNote.classList.add('hidden');
+    state.log.forEach(e => {
+      const li = document.createElement('li');
+      li.className = 'log-row';
+      li.innerHTML = `<span class="lname">${escapeHtml(e.name)} <span class="tag">A${areaOf_(e)}</span></span><span class="ltime">${hhmm_(e.startedAt)}</span><span class="status-pill ${e.late?'status-late':'status-ok'}">${e.late?'اتأخر':'في الميعاد'}</span>`;
+      logList.appendChild(li);
+    });
+  }
+}
+
+// تايمر كل ثانية + اكتشاف تغيير اليوم (12 بليل) + تغيير حالة الإيقاف المجدول
+setInterval(() => {
+  const day = todayStr_();
+  if(lastDay && lastDay !== day){ lastSignature = null; lastAdminSignature = null; refresh_(); }
+  lastDay = day;
+  const lockNow = cairoHour_() < SECOND_BREAK_HOUR;
+  if(lastLockFlag !== null && lastLockFlag !== lockNow){ lastSignature = null; refresh_(); }
+  lastLockFlag = lockNow;
+  const pausedEff = isPaused_();
+  if(lastPausedEff !== null && lastPausedEff !== pausedEff){ lastSignature = null; lastAdminSignature = null; refresh_(); }
+  lastPausedEff = pausedEff;
+
+  // اليوزر اللي مش في الطابور: لو حالة التعارض مع الإيقاف المجدول اتغيرت نعيد الرسم
+  if(myKey && myMode === 'user' && sharedState){
+    const inQ = (lastState.queue || []).some(p => normalize(p.name) === myKey);
+    if(!inQ){
+      const jc = joinCheck_(shapeState_(sharedState), myArea);
+      const jk = jc.conflict + '|' + jc.startLabel + '|' + jc.from + '|' + jc.to;
+      if(lastJoinKey !== null && lastJoinKey !== jk){ lastSignature = null; refresh_(); }
+      lastJoinKey = jk;
+    }else{
+      lastJoinKey = null;
+    }
+  }
+
+  turnHousekeeping_();
+  const toastTimer = document.getElementById('toastTurnTimer');
+  if(toastTimer && myKey) toastTimer.textContent = fmtTime(Math.max(turnLeftNow_(), 0));
+  const turnEl = document.getElementById('turnTimer');
+  if(turnEl && myKey){
+    const me = (lastState.queue || []).find(p => normalize(p.name) === myKey);
+    const left = me && me.turnAt ? TURN_SECONDS - (Date.now() - me.turnAt) / 1000 : TURN_SECONDS;
+    turnEl.textContent = fmtTime(Math.max(left, 0));
+    turnEl.className = 'big-timer ' + timerClass(left);
+  }
+
+  const timerEl = document.getElementById('myBigTimer');
+  if(!timerEl || !myKey) return;
+  const q = lastState.queue || [];
+  const myEntry = q.find(p => normalize(p.name) === myKey);
+
+  if(myEntry && myEntry.status === 'onbreak'){
+    const remaining = allowedSec_(myEntry) - (Date.now()-myEntry.startedAt)/1000;
+    timerEl.textContent = fmtTime(remaining);
+    timerEl.className = 'big-timer ' + timerClass(remaining);
+  }else{
+    const wi = waitInfo_();
+    if(wi && wi.position > wi.free){
+      timerEl.textContent = fmtTime(Math.max(wi.est, 0));
+      timerEl.className = 'big-timer ' + (wi.position === wi.free + 1 ? timerClass(wi.est) : 'ok');
+    }
+  }
+}, 1000);
+
+// ---------- admin ----------
+function initials_(name){
+  const parts = String(name || '').trim().split(/\s+/);
+  return (parts[0] ? parts[0][0] : '؟').toUpperCase();
+}
+function adminRow_(nameHtml, rawName, cols, lead){
+  const colsHtml = cols.map(c => `<span class="admin-col">${c}</span>`).join('');
+  return `<div class="admin-table-row" data-name="${attrEsc_(normAr_(rawName))}">
+    ${lead || ''}
+    <div class="admin-name-cell"><span class="avatar">${escapeHtml(initials_(rawName))}</span><span title="${attrEsc_(rawName)}">${nameHtml}</span></div>
+    ${colsHtml}
+  </div>`;
+}
+
+// كروت اللي في البريك (ممكن أكتر من واحد في الـ Area الواحدة)
+function renderAdminBreakCards(){
+  [1,2].forEach(a => {
+    const card = document.getElementById('adminBreakCard' + a);
+    const label = document.getElementById('adminBreakLabel' + a);
+    const body = document.getElementById('adminBreakBody' + a);
+    const list = adminOnBreak[a] || [];
+    if(!list.length){
+      card.className = 'card';
+      label.textContent = 'Area ' + a + ' — مفيش حد في البريك';
+      body.innerHTML = ''; body.dataset.sig = '';
+      return;
+    }
+    card.className = 'card amber';
+    label.textContent = 'Area ' + a + ' — في البريك دلوقتي (' + list.length + '/' + capOf_(a) + ')';
+    const sigB = list.map(b => b.name + '|' + b.pc + '|' + b.startedAt).join(';');
+    if(body.dataset.sig !== sigB){
+      body.dataset.sig = sigB;
+      body.innerHTML = list.map(b => `<div class="big-name">${escapeHtml(b.name)}${b.pc ? ' · C-' + escapeHtml(b.pc) : ''}</div><div class="big-timer ok">--:--</div>`).join('');
+    }
+    body.querySelectorAll('.big-timer').forEach((el, i) => {
+      const b = list[i]; if(!b) return;
+      const remaining = BREAK_SECONDS + (b.extra || 0) - (Date.now() - b.startedAt) / 1000;
+      el.textContent = fmtTime(remaining);
+      const cls = 'big-timer ' + timerClass(remaining);
+      if(el.className !== cls) el.className = cls;
+    });
+  });
+}
+
+document.getElementById('adminSearch').addEventListener('input', applyAdminFilter);
+function applyAdminFilter(){
+  const q = normAr_(document.getElementById('adminSearch').value);
+  document.querySelectorAll('#adminTabMain .admin-table-row').forEach(row => {
+    const name = row.getAttribute('data-name') || '';
+    row.classList.toggle('filtered-out', !!q && !name.includes(q));
+  });
+}
+
+// تابات الأدمن
+document.getElementById('adminTabs').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-tab]'); if(!t) return;
+  document.querySelectorAll('#adminTabs .login-tab').forEach(x => x.classList.toggle('active', x === t));
+  ['Main','Report','Violation','Log','Settings'].forEach(n => {
+    document.getElementById('adminTab' + n).classList.toggle('hidden', n !== t.dataset.tab);
+  });
+});
+document.getElementById('reportMonth').addEventListener('change', () => { lastAdminSignature = null; renderAdmin(); });
+document.getElementById('reportBody').addEventListener('toggle', (e) => {
+  const d = e.target; if(!d.dataset || !d.dataset.day) return;
+  if(d.open) openDays.add(d.dataset.day); else openDays.delete(d.dataset.day);
+}, true);
+
+// أزرار الأدمن (event delegation)
+document.getElementById('adminDashboard').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const { act, id, dir } = b.dataset;
+  if(act === 'approve') approveBreak(id);
+  else if(act === 'reject') rejectBreak(id);
+  else if(act === 'approveExt') approveExt(id);
+  else if(act === 'rejectExt') rejectExt(id);
+  else if(act === 'approveSkip') approveSkip(id);
+  else if(act === 'rejectSkip') rejectSkip(id);
+  else if(act === 'approveSwap') approveSwap(id);
+  else if(act === 'rejectSwap') rejectSwap(id);
+  else if(act === 'remove') adminRemove(id);
+  else if(act === 'move') adminMove(id, Number(dir));
+  else if(act === 'replace') startReplace(id);
+  else if(act === 'usage') adminUsageStep(id, Number(dir));
+  else if(act === 'unviolate') removeViolation(id);
+  else if(act === 'togglePause') togglePause();
+  else if(act === 'toggleAutoCancel') toggleAutoCancel();
+  else if(act === 'toggleAutoApprove') toggleAutoApprove();
+  else if(act === 'toggleSwapAdmin') toggleSwapAdmin();
+  else if(act === 'cap') adminCapStep(Number(id), Number(dir));
+  else if(act === 'delSchedule') delSchedule(id);
+  else if(act === 'clearQueue') adminClearQueue();
+  else if(act === 'resetUsage') adminResetUsage();
+});
+document.getElementById('adminAddBtn').addEventListener('click', adminAdd);
+document.getElementById('adminCancelReplace').addEventListener('click', cancelReplace);
+document.getElementById('violationAddBtn').addEventListener('click', addViolation);
+document.getElementById('usageSetBtn').addEventListener('click', adminUsageForm);
+document.getElementById('pauseMsgSave').addEventListener('click', () => savePauseMsg(false));
+document.getElementById('pauseMsgClear').addEventListener('click', () => savePauseMsg(true));
+document.getElementById('schAddBtn').addEventListener('click', addSchedule);
+
+function reportHtml_(s){
+  const month = document.getElementById('reportMonth').value || s.usageDate.slice(0,7);
+  const [y, m] = month.split('-').map(Number);
+  const daysIn = new Date(y, m, 0).getDate();
+  const logs = Object.assign({}, s.history);
+  logs[s.usageDate] = s.log;
+  let html = '', total = 0, late = 0;
+  for(let d = daysIn; d >= 1; d--){
+    const ds = y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    if(ds > s.usageDate) continue;
+    const entries = Object.values(logs[ds] || {}).sort((a,b) => a.startedAt - b.startedAt);
+    const dayLate = entries.filter(e => e.late).length;
+    total += entries.length; late += dayLate;
+    const wd = new Date(y, m-1, d).toLocaleDateString('ar-EG', { weekday: 'long' });
+    const body = entries.length === 0
+      ? '<div class="admin-empty">مفيش بريكات في اليوم ده</div>'
+      : entries.map(e => adminRow_(escapeHtml(e.name), e.name, [
+          'A' + areaOf_(e) + (e.pc ? ' · C-' + escapeHtml(e.pc) : ''),
+          hhmm_(e.startedAt) + ' - ' + hhmm_(e.endedAt),
+          `<span class="status-pill ${e.late?'status-late':'status-ok'}">${e.late?'متأخر':'في الميعاد'}</span>`
+        ])).join('');
+    html += `<details class="day-box" data-day="${ds}" ${openDays.has(ds)?'open':''}>
+      <summary><span class="d-sum">${wd}</span><span class="d-date">${ds}</span>
+        <span class="status-pill status-ok">${entries.length - dayLate} في الميعاد</span>
+        <span class="status-pill ${dayLate?'status-late':'status-ok'}">${dayLate} متأخر</span></summary>
+      <div>${body}</div></details>`;
+  }
+  const head = `<div class="month-sum">
+    <span class="status-pill status-ok">إجمالي البريكات: ${total}</span>
+    <span class="status-pill status-late">إجمالي المتأخرين: ${late}</span></div>`;
+  return head + (html || '<div class="empty-note">مفيش أيام في الشهر ده</div>');
+}
+
+// تنبيه الأدمن (صوت + إشعار + Toast) لما يوصله طلب جديد
+function alertAdminNew_(fresh){
+  playTurnSound_();
+  try{ if(navigator.vibrate) navigator.vibrate([250,120,250]); }catch(e){}
+  const lbl = { ext: ' (تمديد)', swap: ' (تبديل)', skip: ' (تخطي الطابور)' };
+  const names = fresh.map(f => f.name + (lbl[f.kind] || '')).join('، ');
+  winNotify('طلب جديد محتاج موافقتك', names, 'sb-admin-req');
+  showToast_({ id: 'adminreq', kind: 'mint', ms: 12000, title: 'طلب جديد محتاج موافقتك', text: names });
+}
+
+function renderAdmin(){
+  if(!myKey || !sharedState) return;
+  const s = shapeState_(sharedState);
+  const queueNow = queueArray_(s);
+  const breaksToday = logArray_(s);
+  const pendingRequests = queueNow
+    .filter(q => q.status === 'pending')
+    .map(q => ({ id: q.id, name: q.name, area: areaOf_(q), pc: q.pc || '', requestedAt: q.startedAt }))
+    .sort((a, b) => a.requestedAt - b.requestedAt);
+  const extRequests = queueNow
+    .filter(q => q.status === 'onbreak' && q.extReq)
+    .map(q => ({ id: q.id, name: q.name, area: areaOf_(q), pc: q.pc || '', reqAt: q.extReq.at }))
+    .sort((a, b) => a.reqAt - b.reqAt);
+  const skipRequests = queueNow
+    .filter(q => q.status === 'waiting' && q.skipReq)
+    .map(q => ({ id: q.id, name: q.name, area: areaOf_(q), pc: q.pc || '', reqAt: q.skipReq.at }))
+    .sort((a, b) => a.reqAt - b.reqAt);
+  const swapRequests = Object.keys(s.swaps || {})
+    .map(id => ({ id, ...s.swaps[id] }))
+    .filter(r => r.status === 'adminwait')
+    .sort((a, b) => (a.at2 || a.at) - (b.at2 || b.at));
+  const joinedToday = Object.keys(s.usageToday)
+    .filter(k => s.usageToday[k] > 0)
+    .map(k => ({ name: k, count: s.usageToday[k] }));
+
+  const sig = JSON.stringify([s, violationsData, settingsData, replaceId, document.getElementById('reportMonth').value, isPaused_()]);
+  if(sig === lastAdminSignature) return;
+  lastAdminSignature = sig;
+
+  // تنبيه لو فيه طلب جديد (أول مرة بنحفظ الموجود من غير تنبيه)
+  const reqItems = pendingRequests.map(p => ({ key: 'b:' + p.id + ':' + p.requestedAt, name: p.name, kind: 'break' }))
+    .concat(extRequests.map(p => ({ key: 'e:' + p.id + ':' + p.reqAt, name: p.name, kind: 'ext' })))
+    .concat(skipRequests.map(p => ({ key: 'k:' + p.id + ':' + p.reqAt, name: p.name, kind: 'skip' })))
+    .concat(swapRequests.map(p => ({ key: 's:' + p.id + ':' + (p.at2 || p.at), name: p.fromName + ' ⇄ ' + p.toName, kind: 'swap' })));
+  if(adminSeenPending === null){
+    adminSeenPending = new Set(reqItems.map(r => r.key));
+  }else{
+    const fresh = reqItems.filter(r => !adminSeenPending.has(r.key));
+    adminSeenPending = new Set(reqItems.map(r => r.key));
+    if(fresh.length) alertAdminNew_(fresh);
+  }
+
+  document.getElementById('adminWho').textContent = 'أهلاً، ' + myDisplayName;
+  document.getElementById('adminUpdatedAt').textContent = new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  // ===== Settings =====
+  const manual = !!settingsData.paused;
+  const sc = activeSchedule_();
+  const pc = document.getElementById('pauseCard');
+  pc.className = 'card set-card' + ((manual || sc) ? ' amber' : '');
+  document.getElementById('pauseStatus').textContent = manual
+    ? 'الطابور والبريك موقوفين للكل'
+    : (sc ? 'موقوف تلقائيًا (مجدول) لحد ' + sc.to : 'الطابور شغال طبيعي');
+  const pb = document.getElementById('pauseBtn');
+  pb.textContent = manual ? 'فتح الطابور' : 'إيقاف الطابور';
+  pb.className = 'btn ' + (manual ? 'btn-start' : 'btn-end');
+
+  const autoOff = !!settingsData.autoCancelOff;
+  document.getElementById('autoCard').className = 'card set-card' + (autoOff ? ' amber' : '');
+  document.getElementById('autoStatus').textContent = autoOff
+    ? 'الإلغاء التلقائي بعد 5 دقايق: موقوف'
+    : 'الإلغاء التلقائي بعد 5 دقايق: شغال';
+  const ab = document.getElementById('autoBtn');
+  ab.textContent = autoOff ? 'تشغيل الإلغاء التلقائي' : 'إيقاف الإلغاء التلقائي';
+  ab.className = 'btn ' + (autoOff ? 'btn-start' : 'btn-end');
+
+  const autoAp = !!settingsData.autoApprove;
+  document.getElementById('autoApproveCard').className = 'card set-card' + (autoAp ? ' amber' : '');
+  document.getElementById('autoApproveStatus').textContent = autoAp
+    ? 'الموافقة التلقائية: شغالة (طلبات البريك بتتوافق لوحدها)'
+    : 'الموافقة التلقائية: موقوفة (انت اللي بتوافق)';
+  const aab = document.getElementById('autoApproveBtn');
+  aab.textContent = autoAp ? 'إيقاف الموافقة التلقائية' : 'تشغيل الموافقة التلقائية';
+  aab.className = 'btn ' + (autoAp ? 'btn-end' : 'btn-start');
+
+  const swapAd = !!settingsData.swapNeedsAdmin;
+  document.getElementById('swapAdminCard').className = 'card set-card' + (swapAd ? ' amber' : '');
+  document.getElementById('swapAdminStatus').textContent = swapAd
+    ? 'التبديل بين المستخدمين: لازم موافقة الأدمن (بعد موافقة الطرف التاني)'
+    : 'التبديل بين المستخدمين: بدون موافقة الأدمن (الطرف التاني بس بيوافق)';
+  const sab = document.getElementById('swapAdminBtn');
+  sab.textContent = swapAd ? 'إلغاء موافقة الأدمن على التبديل' : 'تفعيل موافقة الأدمن على التبديل';
+  sab.className = 'btn ' + (swapAd ? 'btn-end' : 'btn-start');
+
+  document.getElementById('capVal1').textContent = capOf_(1);
+  document.getElementById('capVal2').textContent = capOf_(2);
+
+  const pmi = document.getElementById('pauseMsgInput');
+  if(document.activeElement !== pmi) pmi.value = settingsData.pauseMessage || '';
+
+  const schList = schedulesArr_();
+  document.getElementById('scheduleList').innerHTML = schList.length === 0
+    ? '<div class="admin-empty">مفيش إيقاف مجدول</div>'
+    : schList.map(x => {
+        const on = sc && sc.id === x.id;
+        return `<div class="admin-table-row">
+          <div class="admin-name-cell" style="flex-direction:column;align-items:flex-start;gap:3px">
+            <span style="white-space:normal"><b>${escapeHtml(x.from)} → ${escapeHtml(x.to)}</b>${on ? ' <span class="status-pill status-late">شغال دلوقتي</span>' : ''}</span>
+            <span style="white-space:normal;font-size:13px;color:var(--slate);font-weight:500">${escapeHtml(x.date || 'كل يوم')}${x.msg ? ' · ' + escapeHtml(x.msg) : ''}</span>
+          </div>
+          <span class="admin-col"><span class="row-actions"><button class="mini-btn red" data-act="delSchedule" data-id="${attrEsc_(x.id)}">مسح</button></span></span>
+        </div>`;
+      }).join('');
+
+  // طلبات الموافقة (بريك + تمديد + تخطي + تبديل)
+  const pendingBox = document.getElementById('pendingApprovals');
+  const pendingLabel = document.getElementById('pendingSectionLabel');
+  if(pendingRequests.length || extRequests.length || skipRequests.length || swapRequests.length){
+    pendingLabel.style.display = '';
+    pendingBox.innerHTML = pendingRequests.map(p => `<div class="approval-card">
+        <span class="approval-name">${escapeHtml(p.name)} <span class="tag">A${p.area}${p.pc ? ' · C-' + escapeHtml(p.pc) : ''}</span> <span class="approval-time">${hhmm_(p.requestedAt)}</span></span>
+        <button class="approve-btn" data-act="approve" data-id="${attrEsc_(p.id)}">موافقة</button>
+        <button class="reject-btn" data-act="reject" data-id="${attrEsc_(p.id)}">رفض</button>
+      </div>`).join('')
+      + extRequests.map(p => `<div class="approval-card">
+        <span class="approval-name">${escapeHtml(p.name)} <span class="tag">A${p.area}${p.pc ? ' · C-' + escapeHtml(p.pc) : ''}</span> <span class="approval-time">طلب تمديد ${EXT_SECONDS / 60} دقيقة · ${hhmm_(p.reqAt)}</span></span>
+        <button class="approve-btn" data-act="approveExt" data-id="${attrEsc_(p.id)}">موافقة</button>
+        <button class="reject-btn" data-act="rejectExt" data-id="${attrEsc_(p.id)}">رفض</button>
+      </div>`).join('')
+      + skipRequests.map(p => `<div class="approval-card">
+        <span class="approval-name">${escapeHtml(p.name)} <span class="tag">A${p.area}${p.pc ? ' · C-' + escapeHtml(p.pc) : ''}</span> <span class="approval-time">عايز يتخطى الطابور وينزل بريك دلوقتي · ${hhmm_(p.reqAt)}</span></span>
+        <button class="approve-btn" data-act="approveSkip" data-id="${attrEsc_(p.id)}">موافقة</button>
+        <button class="reject-btn" data-act="rejectSkip" data-id="${attrEsc_(p.id)}">رفض</button>
+      </div>`).join('')
+      + swapRequests.map(r => `<div class="approval-card">
+        <span class="approval-name">${r.kind === 'takeover'
+          ? escapeHtml(r.fromName) + ' ياخد مكان ' + escapeHtml(r.toName)
+          : escapeHtml(r.fromName) + ' ⇄ ' + escapeHtml(r.toName)} <span class="tag">A${Number(r.area) === 2 ? 2 : 1}</span> <span class="approval-time">${r.kind === 'takeover' ? 'طلب مكان' : 'طلب تبديل'} · ${hhmm_(r.at2 || r.at)}</span></span>
+        <button class="approve-btn" data-act="approveSwap" data-id="${attrEsc_(r.id)}">موافقة</button>
+        <button class="reject-btn" data-act="rejectSwap" data-id="${attrEsc_(r.id)}">رفض</button>
+      </div>`).join('');
+  }else{
+    pendingLabel.style.display = 'none';
+    pendingBox.innerHTML = '';
+  }
+
+  // كروت اللي في البريك
+  adminOnBreak = { 1: [], 2: [] };
+  queueNow.filter(q => q.status === 'onbreak').sort((a,b) => a.startedAt - b.startedAt).forEach(q => {
+    adminOnBreak[areaOf_(q)].push({ name: q.name, pc: q.pc || '', startedAt: q.startedAt, extra: Number(q.extra) || 0 });
+  });
+  renderAdminBreakCards();
+
+  // إحصائيات
+  document.getElementById('statJoined').textContent = joinedToday.length;
+  document.getElementById('statWaiting').textContent = queueNow.filter(q => q.status === 'waiting').length;
+  document.getElementById('statOnBreak').textContent = queueNow.filter(q => q.status === 'onbreak').length;
+  document.getElementById('statLate').textContent = breaksToday.filter(e => e.late).length;
+
+  // دخلوا الطابور + تعديل الاستخدام
+  const joinedList = document.getElementById('adminJoinedList');
+  joinedList.innerHTML = joinedToday.length === 0
+    ? '<div class="admin-empty">محدش دخل الطابور النهارده</div>'
+    : joinedToday.map(u => {
+        const k = attrEsc_(u.name);
+        const actions = `<span class="row-actions">
+          <button class="mini-btn" data-act="usage" data-dir="-1" data-id="${k}" title="نقص">−</button>
+          <button class="mini-btn" data-act="usage" data-dir="1" data-id="${k}" title="زيادة">+</button></span>`;
+        return adminRow_(escapeHtml(u.name), u.name, [`${u.count} / ${DAILY_LIMIT}`, actions]);
+      }).join('');
+
+  // الطابور مرتب لكل Area + أدوات التعديل
+  let qHtml = '';
+  [1,2].forEach(a => {
+    const rows = queueNow.filter(p => areaOf_(p) === a)
+      .sort((x, y) => (RANK[x.status] - RANK[y.status]) || (x.joinedAt - y.joinedAt));
+    qHtml += `<div class="area-title">Area ${a}</div>`;
+    if(!rows.length){ qHtml += '<div class="admin-empty">الطابور فاضي</div>'; return; }
+    let n = 0;
+    qHtml += rows.map(p => {
+      const isW = p.status === 'waiting';
+      if(isW) n++;
+      const pcTxt = p.pc ? ' · C-' + p.pc : '';
+      const statusTxt = (p.status === 'onbreak' ? 'في البريك · ' + hhmm_(p.startedAt)
+        : p.status === 'pending' ? 'مستني موافقة · ' + hhmm_(p.startedAt)
+        : 'مستني · ' + hhmm_(p.joinedAt)) + pcTxt;
+      const id = attrEsc_(p.id);
+      const actions = `<span class="row-actions">
+        ${isW ? `<button class="mini-btn" data-act="move" data-dir="-1" data-id="${id}" title="فوق">▲</button>
+                 <button class="mini-btn" data-act="move" data-dir="1" data-id="${id}" title="تحت">▼</button>
+                 <button class="mini-btn" data-act="replace" data-id="${id}">استبدال</button>` : ''}
+        <button class="mini-btn red" data-act="remove" data-id="${id}">✕</button></span>`;
+      const lead = `<span class="pos">${isW ? '#' + n : '•'}</span>`;
+      return adminRow_(escapeHtml(p.name), p.name, [escapeHtml(statusTxt), actions], lead);
+    }).join('');
+  });
+  document.getElementById('adminQueueList').innerHTML = qHtml;
+
+  // فورم الإضافة / الاستبدال
+  const note = document.getElementById('replaceNote');
+  const addBtn = document.getElementById('adminAddBtn');
+  const cancelBtn = document.getElementById('adminCancelReplace');
+  const rep = replaceId ? queueNow.find(p => p.id === replaceId) : null;
+  if(replaceId && !rep){ replaceId = null; }
+  if(rep){
+    note.textContent = 'استبدال: ' + rep.name + ' — اكتب الاسم الجديد';
+    note.classList.remove('hidden'); cancelBtn.classList.remove('hidden');
+    addBtn.textContent = 'استبدال';
+    document.getElementById('adminAddArea').disabled = true;
+  }else{
+    note.classList.add('hidden'); cancelBtn.classList.add('hidden');
+    addBtn.textContent = 'إضافة للطابور';
+    document.getElementById('adminAddArea').disabled = false;
+  }
+
+  // أخدوا بريك النهارده
+  const breaksList = document.getElementById('adminBreaksList');
+  breaksList.innerHTML = breaksToday.length === 0
+    ? '<div class="admin-empty">لسه محدش خلص بريك النهارده</div>'
+    : breaksToday.map(e => adminRow_(escapeHtml(e.name), e.name, [
+        'A' + areaOf_(e) + (e.pc ? ' · C-' + escapeHtml(e.pc) : ''),
+        hhmm_(e.startedAt) + ' - ' + hhmm_(e.endedAt),
+        `<span class="status-pill ${e.late?'status-late':'status-ok'}">${e.late?'متأخر':'في الميعاد'}</span>`
+      ])).join('');
+
+  // Report
+  document.getElementById('reportBody').innerHTML = reportHtml_(s);
+
+  // Violation
+  const vKeys = Object.keys(violationsData);
+  document.getElementById('violationList').innerHTML = vKeys.length === 0
+    ? '<div class="admin-empty">مفيش حد موقوف</div>'
+    : vKeys.map(k => {
+        const v = violationsData[k];
+        return adminRow_(escapeHtml(v.name), v.name, [
+          new Date(v.at).toLocaleDateString('ar-EG') + ' ' + hhmm_(v.at),
+          `<span class="row-actions"><button class="mini-btn" data-act="unviolate" data-id="${attrEsc_(k)}">فتح</button></span>`
+        ]);
+      }).join('');
+
+  // Log
+  const logs = Object.values(s.adminLog || {}).sort((a,b) => b.at - a.at).slice(0, 300);
+  document.getElementById('adminLogList').innerHTML = logs.length === 0
+    ? '<div class="admin-empty">لسه مفيش تعديلات</div>'
+    : logs.map(l => `<div class="admin-table-row">
+        <div class="admin-name-cell" style="flex-direction:column;align-items:flex-start;gap:3px">
+          <span style="white-space:normal"><b>${escapeHtml(l.admin)}</b> — ${escapeHtml(l.action)}${l.target ? ': <span style="color:var(--mint)">' + escapeHtml(l.target) + '</span>' : ''}</span>
+          ${l.details ? '<span style="white-space:normal;font-size:13px;color:var(--slate);font-weight:500">' + escapeHtml(l.details) + '</span>' : ''}
+        </div>
+        <span class="admin-col">${new Date(l.at).toLocaleDateString('ar-EG')}<br>${hhmm_(l.at)}</span>
+      </div>`).join('');
+
+  applyAdminFilter();
+}
+
+window.joinQueue = joinQueue;
+window.requestBreak = requestBreak;
+window.endBreak = endBreak;
+window.leaveQueue = leaveQueue;
+window.requestExtend = requestExtend;
+window.requestSkip = requestSkip;
+window.cancelSkip = cancelSkip;
+window.openSwapPicker = openSwapPicker;
+window.cancelSwapRequest = cancelSwapRequest;
+
+document.getElementById('swapApprove').addEventListener('click', () => { if(shownSwapInId) respondSwap(shownSwapInId, true); });
+document.getElementById('swapReject').addEventListener('click', () => { if(shownSwapInId) respondSwap(shownSwapInId, false); });
+document.getElementById('pickCancel').addEventListener('click', closePicker_);
+document.getElementById('pickOverlay').addEventListener('click', (e) => { if(e.target.id === 'pickOverlay') closePicker_(); });
+document.getElementById('pickList').addEventListener('click', (e) => {
+  const b = e.target.closest('.pick-item'); if(!b) return;
+  const { mode, id } = b.dataset;
+  const name = b.querySelector('.pick-name').textContent;
+  closePicker_();
+  requestSwap(id, name, mode === 'now' ? 'turn' : (mode === 'takeover' ? 'takeover' : 'later'));
+});
+
+// ---------- استرجاع الجلسة (لحد ما يقفل المتصفح أو يعمل logout) ----------
+setArea(0);
+try{
+  const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+  if(saved && saved.key){
+    myKey = saved.key; myDisplayName = saved.displayName;
+    myMode = saved.mode === 'admin' ? 'admin' : 'user';
+    myArea = saved.area === 2 ? 2 : 1;
+    myPc = cleanPc_(saved.pc);
+    enterApp_();
+  }
+}catch(e){}
+</script>
+
+</body>
+</html>
