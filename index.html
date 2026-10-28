@@ -469,6 +469,11 @@
       <div class="admin-table-head"><span class="h-name">الاسم</span><span class="h-col">من إمتى</span><span class="h-col">تحكم</span></div>
       <div id="violationList"></div>
     </div>
+    <div class="section-label">تحذيرات التأخير (لسه مش موقوفين)</div>
+    <div class="admin-table">
+      <div class="admin-table-head"><span class="h-name">الاسم</span><span class="h-col">تحكم</span></div>
+      <div id="lateList"></div>
+    </div>
   </div>
 
   <!-- ===== Log ===== -->
@@ -599,6 +604,12 @@ const violationsRef = ref(db, 'violations'); // مسار منفصل عشان أ�
 let violationsData = {};
 const settingsRef = ref(db, 'settings'); // مسار منفصل زي violations
 let settingsData = {};
+const LATE_GRACE_SEC = 60; // التأخير اللي بيتحسب (أكتر من دقيقة)
+const LATE_MAX = 3;        // عدد التأخيرات قبل الإيقاف التلقائي
+const lateRef = ref(db, 'lateStrikes');
+let lateData = {};
+let lateWarnedFor = null;
+let lastBreakWarnId = null;
 const PAUSE_MSG = 'الدخول في الطابور وطلب البريك موقوف مؤقتًا من الأدمن، وسيتم فتحه قريبًا';
 let lastPaused = false;
 let lastPausedEff = null;
@@ -810,6 +821,11 @@ onValue(violationsRef, (snap) => {
 });
 onValue(settingsRef, (snap) => {
   settingsData = snap.val() || {};
+  refresh_();
+});
+onValue(lateRef, (snap) => {
+  lateData = snap.val() || {};
+  lastSignature = null; lastAdminSignature = null;
   refresh_();
 });
 function refresh_(){
@@ -1136,7 +1152,7 @@ function conflictMsg_(jc){
 
 // ---------- user actions ----------
 async function joinQueue(){
-  if(violationsData[vkey_(myKey)]){ showPopup_(VIOLATION_MSG, 'الشورت بريك موقوف'); return; }
+  if(violationsData[vkey_(myKey)]){ showPopup_(violationMsg_(), 'الشورت بريك موقوف'); return; }
   if(manualPaused_()){ showPopup_(pauseMsg_(), 'الطابور موقوف'); return; }
   const usedNow = sharedState ? (shapeState_(sharedState).usageToday[myKey] || 0) : 0;
   if(secondBreakLocked_(usedNow)){ showPopup_(SECOND_MSG, 'البريك التاني لسه مفتحش'); return; }
@@ -1160,7 +1176,7 @@ async function joinQueue(){
 }
 
 async function requestBreak(id){
-  if(violationsData[vkey_(myKey)]){ showPopup_(VIOLATION_MSG, 'الشورت بريك موقوف'); return; }
+  if(violationsData[vkey_(myKey)]){ showPopup_(violationMsg_(), 'الشورت بريك موقوف'); return; }
   if(isPaused_()){ showPopup_(pausePopupMsg_(), manualPaused_() ? 'الطابور موقوف' : 'إيقاف مجدول'); return; }
   await guardedTransaction_((state) => {
     if(violationsData[vkey_(myKey)]) return;
@@ -1187,16 +1203,80 @@ async function requestBreak(id){
   }, 'لسه مش دورك');
 }
 
+function violationMsg_(){
+  const v = violationsData[vkey_(myKey)];
+  if(v && v.reason === 'late3'){
+    const days = Object.values(v.delays || {}).map(d => d.date).join('، ');
+    return 'اتأخرت ' + LATE_MAX + ' مرات أكتر من دقيقة عن ميعاد البريك (' + days + ')، عشان كده الشورت بريك اتقفل عليك ومش هيتفتح غير من الأدمن.';
+  }
+  return VIOLATION_MSG;
+}
+function delaysOf_(rec){ return Object.values((rec && rec.items) || {}).sort((a,b) => a.at - b.at); }
+function strikesOf_(key){ return delaysOf_(lateData[vkey_(key)]).length; }
+function delayLine_(d){ return escapeHtml(d.date) + ' · ' + hhmm_(d.at) + ' · تأخر ' + fmtTime(d.over) + ' · Area ' + d.area; }
+function lateBanner_(n){
+  if(n >= LATE_MAX - 1) return '<div class="warn-note" style="margin-bottom:12px;color:var(--red)">⚠ دي آخر تحذير: لو اتأخرت أكتر من دقيقة تاني هيتقفلك الشورت بريك.</div>';
+  if(n > 0) return '<div class="warn-note" style="margin-bottom:12px">اتسجل عليك ' + n + ' من ' + LATE_MAX + ' تحذيرات تأخير، خد بالك من الميعاد.</div>';
+  return '';
+}
+
+async function recordLate_(name, overSec, area){
+  const k = vkey_(name);
+  let rec = null;
+  try{
+    const res = await runTransaction(ref(db, 'lateStrikes/' + k), (cur) => {
+      const c = cur || {};
+      c.name = name;
+      c.items = c.items || {};
+      c.items[newId_()] = { at: Date.now(), date: todayStr_(), over: Math.round(overSec), area: area };
+      return c;
+    });
+    rec = res.snapshot.val();
+  }catch(e){ showPopup_('حصل خطأ في تسجيل التأخير'); return; }
+  const items = delaysOf_(rec);
+  const n = items.length;
+  if(n >= LATE_MAX){
+    try{ await set(ref(db, 'violations/' + k), { name: name, at: Date.now(), reason: 'late3', delays: items }); }catch(e){}
+    await guardedTransaction_((state) => {
+      logAdmin_(state, 'إيقاف تلقائي بسبب ' + LATE_MAX + ' تأخيرات', name, items.map(d => d.date + ' (' + fmtTime(d.over) + ')').join(' · '), 'النظام');
+      return state;
+    });
+    return; // رسالة الإيقاف بتظهر من مستمع الـ violations
+  }
+  const last = n === LATE_MAX - 1;
+  showPopup_(
+    'اتأخرت ' + fmtTime(overSec) + ' عن ميعاد البريك، واتسجل عليك تحذير ' + n + ' من ' + LATE_MAX + '.'
+    + (last ? ' دي آخر تحذير: لو اتأخرت أكتر من دقيقة مرة كمان هيتقفلك الشورت بريك ومش هيتفتح غير من الأدمن.'
+            : ' فاضل لك ' + (LATE_MAX - n) + ' تحذيرات قبل ما الشورت بريك يتقفل.'),
+    last ? 'آخر تحذير' : 'تحذير تأخير'
+  );
+}
+
 async function endBreak(id){
-  await guardedTransaction_((state) => {
+  removeToast_('latewarn');
+  let overSec = 0, nm = '', ar = 1;
+  const ok = await guardedTransaction_((state) => {
     const entry = state.queue[id];
     if(!entry || normalize(entry.name) !== myKey) return;
     const startedAt = Number(entry.startedAt);
     const now = Date.now();
     const allowed = state.breakSeconds + (Number(entry.extra) || 0);
-    const late = (now - startedAt) / 1000 > allowed;
-    state.log[newId_()] = { name: entry.name, area: areaOf_(entry), pc: entry.pc || '', startedAt, endedAt: now, late };
+    overSec = (now - startedAt) / 1000 - allowed;
+    nm = entry.name; ar = areaOf_(entry);
+    state.log[newId_()] = { name: entry.name, area: ar, pc: entry.pc || '', startedAt, endedAt: now, late: overSec > 0 };
     delete state.queue[id];
+    return state;
+  });
+  if(ok && overSec > LATE_GRACE_SEC) await recordLate_(nm, overSec, ar);
+}
+
+async function resetLate(k){
+  const rec = lateData[k]; if(!rec) return;
+  if(!confirm('تصفّر تحذيرات التأخير لـ ' + (rec.name || '') + '؟')) return;
+  try{ await remove(ref(db, 'lateStrikes/' + k)); }
+  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  await guardedTransaction_((state) => {
+    logAdmin_(state, 'تصفير تحذيرات التأخير', rec.name || k, delaysOf_(rec).length + ' تحذير');
     return state;
   });
 }
@@ -1772,10 +1852,12 @@ async function addViolation(){
 async function removeViolation(k){
   const v = violationsData[k];
   if(!v) return;
-  try{ await remove(ref(db, 'violations/' + k)); }
-  catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
+  try{
+    await remove(ref(db, 'violations/' + k));
+    await remove(ref(db, 'lateStrikes/' + k)); // العداد بيتصفّر مع الفتح
+  }catch(e){ showPopup_('حصل خطأ، جرب تاني'); return; }
   await guardedTransaction_((state) => {
-    logAdmin_(state, 'فتح الشورت بريك', v.name, '');
+    logAdmin_(state, 'فتح الشورت بريك', v.name, v.reason === 'late3' ? 'اتفتح بعد ' + LATE_MAX + ' تأخيرات (اتصفّر العداد)' : '');
     return state;
   });
 }
@@ -2062,6 +2144,7 @@ function render(){
     swapOut,
     autoCancel: !settingsData.autoCancelOff,
     log: logArray_(s),
+    strikes: strikesOf_(myKey),
     stats: myStats_(s)
   };
   const sig = JSON.stringify(state);
@@ -2069,7 +2152,7 @@ function render(){
   if(sig === lastSignature) return;
   lastSignature = sig;
 
-  if(state.violated && !lastViolated) showPopup_(VIOLATION_MSG, 'الشورت بريك موقوف');
+  if(state.violated && !lastViolated) showPopup_(violationMsg_(), 'الشورت بريك موقوف');
   lastViolated = state.violated;
   if(state.paused && !lastPaused) showPopup_(state.pauseMsg, state.manualPaused ? 'الطابور موقوف' : 'إيقاف مجدول');
   lastPaused = state.paused;
@@ -2091,7 +2174,7 @@ function render(){
   }
 
   document.getElementById('whoName').textContent = 'أهلاً، ' + myDisplayName;
-  document.getElementById('usageLine').textContent = 'استخدمت ' + state.usedToday + ' من ' + DAILY_LIMIT + ' النهارده · Area ' + area;
+  document.getElementById('usageLine').textContent = 'استخدمت ' + state.usedToday + ' من ' + DAILY_LIMIT + ' النهارده · Area ' + area + (state.strikes ? ' · تأخيرات ' + state.strikes + '/' + LATE_MAX : '');
   document.getElementById('queueTitle').textContent = 'الطابور دلوقتي · Area ' + area;
   renderStats_(state.stats);
 
@@ -2100,6 +2183,12 @@ function render(){
   const waiting = q.filter(p => p.status === 'waiting').sort((a,b) => a.joinedAt - b.joinedAt);
   const myEntry = q.find(p => normalize(p.name) === myKey);
   const free = Math.max(state.cap - onBreakList.length - pendingList.length, 0);
+    if(myEntry && myEntry.status === 'onbreak'){
+    if(lastBreakWarnId !== myEntry.id){
+      lastBreakWarnId = myEntry.id;
+      if(state.strikes >= LATE_MAX - 1) showPopup_('اتأخرت ' + state.strikes + ' مرتين قبل كده، ودي آخر تحذير. لو اتأخرت أكتر من دقيقة عن ميعاد البريك المرة دي هيتقفلك الشورت بريك ومش هيتفتح غير من الأدمن.', 'آخر تحذير');
+    }
+  }else{ lastBreakWarnId = null; }
 
   // إشعار نتيجة طلب التمديد
   const extKey = myEntry && myEntry.status === 'onbreak' ? (myEntry.extDone || '') : '';
@@ -2128,7 +2217,7 @@ function render(){
     myCard.className = 'card';
     myCard.innerHTML = `
       <div class="big-name" style="color:var(--red)">الشورت بريك موقوف</div>
-      <div class="muted-note" style="margin-top:12px">${escapeHtml(VIOLATION_MSG)}</div>
+      <div class="muted-note" style="margin-top:12px">${escapeHtml(violationMsg_())}</div>
       <button class="btn btn-start" disabled>ادخل الطابور</button>`;
   }else if(state.manualPaused && !(myEntry && (myEntry.status === 'onbreak' || myEntry.status === 'pending'))){
     myCard.className = 'card';
@@ -2150,6 +2239,7 @@ function render(){
     else extBlock = `<button class="btn btn-leave" onclick="requestExtend('${myEntry.id}')">اطلب تمديد ${EXT_SECONDS / 60} دقيقة</button>`;
     myCard.className = 'card amber';
     myCard.innerHTML = `
+            ${lateBanner_(state.strikes)}
       <div class="timer-label">${remaining>=0 ? 'باقي على البريك بتاعك' : 'اتأخرت عن الميعاد'}</div>
       <div class="big-timer ${timerClass(remaining)}" id="myBigTimer">${fmtTime(remaining)}</div>
       <button class="btn btn-end" onclick="endBreak('${myEntry.id}')">خلصت البريك</button>
@@ -2310,6 +2400,13 @@ setInterval(() => {
     const remaining = allowedSec_(myEntry) - (Date.now()-myEntry.startedAt)/1000;
     timerEl.textContent = fmtTime(remaining);
     timerEl.className = 'big-timer ' + timerClass(remaining);
+  if(-remaining > LATE_GRACE_SEC && lateWarnedFor !== myEntry.id){
+      lateWarnedFor = myEntry.id;
+      const nx = strikesOf_(myKey) + 1;
+      playTurnSound_();
+      showToast_({ id: 'latewarn', kind: 'bad', sticky: true, title: 'اتأخرت أكتر من دقيقة',
+        text: 'لو خلصت البريك دلوقتي هيتسجل عليك تحذير ' + nx + ' من ' + LATE_MAX + (nx >= LATE_MAX ? '، وهيتقفلك الشورت بريك.' : '.') });
+    }
   }else{
     const wi = waitInfo_();
     if(wi && wi.position > wi.free){
@@ -2403,6 +2500,7 @@ document.getElementById('adminDashboard').addEventListener('click', (e) => {
   else if(act === 'replace') startReplace(id);
   else if(act === 'usage') adminUsageStep(id, Number(dir));
   else if(act === 'unviolate') removeViolation(id);
+  else if(act === 'resetLate') resetLate(id);
   else if(act === 'togglePause') togglePause();
   else if(act === 'toggleAutoCancel') toggleAutoCancel();
   else if(act === 'toggleAutoApprove') toggleAutoApprove();
@@ -2488,7 +2586,7 @@ function renderAdmin(){
     .filter(k => s.usageToday[k] > 0)
     .map(k => ({ name: k, count: s.usageToday[k] }));
 
-  const sig = JSON.stringify([s, violationsData, settingsData, replaceId, document.getElementById('reportMonth').value, isPaused_()]);
+  const sig = JSON.stringify([s, violationsData, settingsData, lateData, replaceId, document.getElementById('reportMonth').value, isPaused_()]);
   if(sig === lastAdminSignature) return;
   lastAdminSignature = sig;
 
@@ -2681,16 +2779,38 @@ function renderAdmin(){
   // Report
   document.getElementById('reportBody').innerHTML = reportHtml_(s);
 
-  // Violation
+    // Violation
   const vKeys = Object.keys(violationsData);
   document.getElementById('violationList').innerHTML = vKeys.length === 0
     ? '<div class="admin-empty">مفيش حد موقوف</div>'
     : vKeys.map(k => {
         const v = violationsData[k];
-        return adminRow_(escapeHtml(v.name), v.name, [
-          new Date(v.at).toLocaleDateString('ar-EG') + ' ' + hhmm_(v.at),
-          `<span class="row-actions"><button class="mini-btn" data-act="unviolate" data-id="${attrEsc_(k)}">فتح</button></span>`
-        ]);
+        const auto = v.reason === 'late3';
+        const lines = auto
+          ? Object.values(v.delays || {}).map(d => '<span style="white-space:normal;font-size:13px;color:var(--slate);font-weight:500">' + delayLine_(d) + '</span>').join('')
+          : '';
+        return `<div class="admin-table-row">
+          <div class="admin-name-cell" style="flex-direction:column;align-items:flex-start;gap:3px">
+            <span style="white-space:normal"><b>${escapeHtml(v.name)}</b>${auto ? ' <span class="status-pill status-late">إيقاف تلقائي · ' + LATE_MAX + ' تأخيرات</span>' : ''}</span>
+            ${lines}
+          </div>
+          <span class="admin-col">${new Date(v.at).toLocaleDateString('ar-EG')}<br>${hhmm_(v.at)}</span>
+          <span class="admin-col"><span class="row-actions"><button class="mini-btn" data-act="unviolate" data-id="${attrEsc_(k)}">فتح</button></span></span>
+        </div>`;
+      }).join('');
+
+  const lKeys = Object.keys(lateData).filter(k => !violationsData[k] && delaysOf_(lateData[k]).length > 0);
+  document.getElementById('lateList').innerHTML = lKeys.length === 0
+    ? '<div class="admin-empty">مفيش تحذيرات تأخير</div>'
+    : lKeys.map(k => {
+        const rec = lateData[k], ds = delaysOf_(rec);
+        return `<div class="admin-table-row">
+          <div class="admin-name-cell" style="flex-direction:column;align-items:flex-start;gap:3px">
+            <span style="white-space:normal"><b>${escapeHtml(rec.name || k)}</b> <span class="status-pill status-late">${ds.length} / ${LATE_MAX}</span></span>
+            ${ds.map(d => '<span style="white-space:normal;font-size:13px;color:var(--slate);font-weight:500">' + delayLine_(d) + '</span>').join('')}
+          </div>
+          <span class="admin-col"><span class="row-actions"><button class="mini-btn red" data-act="resetLate" data-id="${attrEsc_(k)}">تصفير</button></span></span>
+        </div>`;
       }).join('');
 
   // Log
