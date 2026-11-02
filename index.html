@@ -1208,7 +1208,7 @@ function violationMsg_(){
   const v = violationsData[vkey_(myKey)];
   if(v && v.reason === 'late3'){
     const days = Object.values(v.delays || {}).map(d => d.date).join('، ');
-    return 'اتأخرت ' + LATE_MAX + ' مرات أكتر من دقيقة عن ميعاد البريك (' + days + ')، عشان كده الشورت بريك اتقفل عليك ومش هيتفتح غير من الأدمن.';
+    return 'اتأخرت ' + LATE_MAX + ' مرات أكتر من دقيقة عن ميعاد البريك (' + days + ')، عشان كده الشورت بريك اتقفل عليك ومش هيتفتح غير من الQC.';
   }
   return VIOLATION_MSG;
 }
